@@ -1,0 +1,110 @@
+┌─────────────────────┐
+│ doctors             │
+├─────────────────────┤
+│ id (PK)             │
+│ name                │
+│ specialization      │
+│ created_at          │
+└──────────┬──────────┘
+           │
+           │ doctor_id
+           │
+┌──────────▼──────────┐
+│ appointments        │
+├─────────────────────┤
+│ id (PK)             │
+│ patient_id (FK)     │──┐
+│ doctor_id (FK)      │  │
+│ status              │  │
+│ scheduled_at        │  │
+│ completed_at        │  │
+│ created_at          │  │
+└──────────┬──────────┘  │
+           │             │
+           │             │
+           │             │ patient_id
+           │             │
+           │    ┌────────▼────────┐
+           │    │ patients        │
+           │    ├─────────────────┤
+           │    │ id (PK)         │
+           │    │ name            │
+           │    │ date_of_birth   │
+           │    │ sex             │
+           │    │ mobile          │
+           │    │ email           │
+           │    │ created_at      │
+           │    └─────────────────┘
+           │
+           │ appointment_id
+           │
+           ├─────────────────────┐
+           │                     │
+           │                     │
+           ▼                     ▼
+
+┌──────────────────┐    ┌──────────────────┐
+│ diagnoses        │    │ reports          │
+├──────────────────┤    ├──────────────────┤
+│ id (PK)          │    │ id (PK)          │
+│ problem          │    │ file_url         │
+│ diagnosis        │    │ appointment_id   │
+│ appointment_id   │    │ created_at       │
+│ followup         │    └────────┬─────────┘
+│ created_at       │             │
+└──────────────────┘             │
+                                 │ report_id
+                                 │
+                                 ▼
+
+                      ┌──────────────────────┐
+                      │ report_extractions   │
+                      ├──────────────────────┤
+                      │ id (PK)             │
+                      │ content             │
+                      │ appointment_id      │
+                      │ report_id (FK)      │
+                      └──────────────────────┘
+
+
+           │
+           │ appointment_id
+           │
+           ▼
+
+┌──────────────────┐
+│ audio_files      │
+├──────────────────┤
+│ id (PK)          │
+│ file_url         │
+│ appointment_id   │
+│ created_at       │
+└────────┬─────────┘
+         │
+         │ audio_file_id
+         │
+         ▼
+
+┌────────────────────┐
+│ audio_extractions  │
+├────────────────────┤
+│ id (PK)            │
+│ content            │
+│ appointment_id     │
+│ audio_file_id (FK) │
+└────────────────────┘
+
+
+           │
+           │ appointment_id
+           │
+           ▼
+
+┌──────────────────┐
+│ ai_summaries     │
+├──────────────────┤
+│ id (PK)          │
+│ appointment_id   │
+│ summary          │
+│ created_at       │
+└──────────────────┘

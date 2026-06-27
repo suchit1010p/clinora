@@ -1,0 +1,137 @@
+### DB tables with Columns ###
+
+doctors
+---------
+id (PK)
+name
+specialization
+password_hash
+created_at
+
+
+patients
+---------
+id (PK)
+name
+date_of_birth
+sex
+mobile (UNIQUE)
+email (UNIQUE)
+password_hash
+created_at
+
+
+appointments
+---------
+id (PK)
+patient_id (FK -> patients.id)
+doctor_id (FK -> doctors.id)
+status
+scheduled_at
+completed_at
+created_at
+
+
+diagnoses
+---------
+id (PK)
+problem
+diagnosis
+appointment_id (FK -> appointments.id)
+followup
+created_at
+
+
+reports
+---------
+id (PK)
+file_url
+appointment_id (FK -> appointments.id)
+created_at
+
+
+report_extractions
+---------
+id (PK)
+content
+appointment_id (FK -> appointments.id)
+report_id (FK -> reports.id)
+
+
+audio_files
+---------
+id (PK)
+file_url
+appointment_id (FK -> appointments.id)
+created_at
+
+
+audio_extractions
+---------
+id (PK)
+content
+appointment_id (FK -> appointments.id)
+audio_file_id (FK -> audio_files.id)
+
+
+ai_summaries
+---------
+id (PK)
+appointment_id (FK -> appointments.id)
+summary
+created_at
+
+
+refresh_tokens
+---------
+id (PK)
+patient_id (FK -> patients.id) NULL
+doctor_id (FK -> doctors.id) NULL
+token_hash
+expires_at
+revoked
+created_at
+
+Constraint:
+---------
+Exactly one of:
+patient_id OR doctor_id
+must be present
+
+
+
+
+
+### Relationship Map ###
+
+patients
+    │
+    │ patient_id
+    ▼
+appointments
+    ▲
+    │ doctor_id
+    │
+doctors
+
+
+appointments
+    │
+    ├──────────────► diagnoses
+    │
+    ├──────────────► reports
+    │                  │
+    │                  ▼
+    │          report_extractions
+    │
+    ├──────────────► audio_files
+    │                  │
+    │                  ▼
+    │          audio_extractions
+    │
+    └──────────────► ai_summaries
+
+
+patients ─────────► refresh_tokens
+
+doctors  ─────────► refresh_tokens
