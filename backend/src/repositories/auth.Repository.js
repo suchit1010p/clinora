@@ -35,3 +35,29 @@ export async function createRefreshTokenForDoctor(
 
     return result?.[0] ?? null;
 }
+
+export async function getRefreshTokenForPatient(tokenHash) {
+    const result = await sql`
+        SELECT *
+        FROM refresh_tokens
+        WHERE patient_id IS NOT NULL
+          AND token_hash = ${tokenHash}
+        ORDER BY id DESC
+        LIMIT 1;
+    `;
+
+    return result?.[0] ?? null;
+}
+
+export async function getRefreshTokenForDoctor(tokenHash) {
+    const result = await sql`
+        SELECT *
+        FROM refresh_tokens
+        WHERE doctor_id IS NOT NULL
+          AND token_hash = ${tokenHash}
+        ORDER BY id DESC
+        LIMIT 1;
+    `;
+
+    return result?.[0] ?? null;
+}

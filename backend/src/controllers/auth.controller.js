@@ -1,8 +1,10 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import bcrypt from "bcrypt";
-import { createPatient, getPatientByMail, getPatientByMobile } from "../repositories/patient.Repository.js";
-import { createDoctor, getDoctorByMail } from "../repositories/doctor.Repository.js";
+import jwt from "jsonwebtoken";
+import { createPatient, getPatientByMail, getPatientByMobile, getPatientById } from "../repositories/patient.Repository.js";
+import { createDoctor, getDoctorByMail, getDoctorById } from "../repositories/doctor.Repository.js";
+import { createRefreshTokenForDoctor, createRefreshTokenForPatient, getRefreshTokenForDoctor, getRefreshTokenForPatient } from "../repositories/auth.Repository.js";
 import { generateAccessAndRefereshTokensForDoctor, generateAccessAndRefereshTokensForPatient } from "../utils/genAcc&RefToken.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
@@ -47,7 +49,7 @@ export const Login = asyncHandler(async (req,res) => {
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
-            new ApiResponse(201, {user: safeuser}, "Login successfull")
+            new ApiResponse(200, { user: safeuser }, "Login successful")
         )
 }) 
 
@@ -134,4 +136,85 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(new ApiResponse(201, { patient: safePatient }, "Registration successful"));
+});
+
+
+// refreshAccessToken 
+
+export const refreshAccessToken = asyncHandler(async (req, res) => {
+    const token = req.cookies?.refreshToken || req.header("Authorization")?.replace("Bearer ", "");
+    if (!token) {
+        throw new ApiError(401, "Refresh token missing");
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+        throw new ApiError(401, "Invalid refresh token");
+    }
+
+    const isPatient = decoded?.role === "patient";
+    const refreshTokenRow = isPatient
+        ? await getRefreshTokenForPatient(token)
+        : await getRefreshTokenForDoctor(token);
+
+    if (!refreshTokenRow) {
+        throw new ApiError(401, "Refresh token not found");
+    }
+
+    const user = isPatient
+        ? await getPatientById(decoded.id)
+        : await getDoctorById(decoded.id);
+
+    if (!user) {
+        throw new ApiError(401, "User not found");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } = isPatient
+        ? await generateAccessAndRefereshTokensForPatient(user.id)
+        : await generateAccessAndRefereshTokensForDoctor(user.id);
+
+    const safeUser = { ...user };
+    delete safeUser.password;
+    delete safeUser.password_hash;
+
+    const options = {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production",
+    };
+
+    return res.status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(new ApiResponse(200, { user: safeUser }, "Token refreshed"));
+});
+
+export const getMe = asyncHandler(async (req, res) => {
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    if (!token) {
+        throw new ApiError(401, "Access token missing");
+    }
+
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    } catch (error) {
+        throw new ApiError(401, "Invalid access token");
+    }
+
+    const user = decoded?.role === "patient"
+        ? await getPatientById(decoded.id)
+        : await getDoctorById(decoded.id);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const safeUser = { ...user };
+    delete safeUser.password;
+    delete safeUser.password_hash;
+
+    return res.status(200).json(new ApiResponse(200, { user: safeUser }, "User info retrieved"));
 });
