@@ -1,8 +1,8 @@
 import { createRefreshTokenForDoctor, createRefreshTokenForPatient } from "../repositories/auth.Repository.js";
 import { getDoctorById } from "../repositories/doctor.Repository.js";
 import { getPatientById } from "../repositories/patient.Repository.js";
-import { ApiError } from "./ApiError.js"
-import jwt from "jsonwebtoken"
+import { ApiError } from "./ApiError.js";
+import jwt from "jsonwebtoken";
 
 
 const generateAccessAndRefereshTokensForPatient = async (patientId) => {
@@ -13,10 +13,11 @@ const generateAccessAndRefereshTokensForPatient = async (patientId) => {
             throw new ApiError(404, "patient not found")
         }
 
-        const accessToken = generateAccesstoken(patient, "patient")
-        const refreshToken = generateRefreshToken(patient, "patient")
+        const accessToken = await generateAccesstoken(patient, "patient")
+        const refreshToken = await generateRefreshtoken(patient, "patient")
+        const expiresAt = getExpiryTimestamp(process.env.REFRESH_TOKEN_EXPIRY)
 
-        await createRefreshTokenForPatient(patientId, refreshToken, process.env.REFRESH_TOKEN_EXPIRY)
+        await createRefreshTokenForPatient(patientId, refreshToken, expiresAt)
         
         return {accessToken, refreshToken}
     } catch (error) {
@@ -33,10 +34,11 @@ const generateAccessAndRefereshTokensForDoctor = async (doctorId) => {
             throw new ApiError(404, "patient not found")
         }
 
-        const accessToken = generateAccesstoken(doctor, "doctor")
-        const refreshToken = generateRefreshToken(doctor, "doctor")
+        const accessToken = await generateAccesstoken(doctor, "doctor")
+        const refreshToken = await generateRefreshtoken(doctor, "doctor")
+        const expiresAt = getExpiryTimestamp(process.env.REFRESH_TOKEN_EXPIRY)
 
-        await createRefreshTokenForDoctor(doctorId, refreshToken, process.env.REFRESH_TOKEN_EXPIRY)
+        const refresh = await createRefreshTokenForDoctor(doctorId, refreshToken, expiresAt)
         
         return {accessToken, refreshToken}
     } catch (error) {
@@ -71,5 +73,16 @@ const generateRefreshtoken = async (user, role) => {
         }
     )
 }
+
+const getExpiryTimestamp = (expiryValue) => {
+    if (!expiryValue) throw new ApiError(500, "Refresh token expiry value is not configured");
+
+    const date = new Date(/^(\d+)d$/i.test(expiryValue)
+        ? Date.now() + parseInt(expiryValue, 10) * 86400000
+        : expiryValue);
+
+    if (Number.isNaN(date.getTime())) throw new ApiError(500, "Invalid refresh token expiry timestamp");
+    return date.toISOString().replace("T", " ").replace("Z", "");
+};
 
 export { generateAccessAndRefereshTokensForDoctor, generateAccessAndRefereshTokensForPatient }

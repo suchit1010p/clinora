@@ -5,6 +5,7 @@ doctors
 id (PK)
 name
 specialization
+email (UNIQUE)
 password_hash
 created_at
 

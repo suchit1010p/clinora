@@ -1,35 +1,21 @@
-import { sql } from "../db/db";
+import { sql } from "../db/db.js";
 
 export async function createRefreshTokenForPatient(
     patientId,
     tokenHash,
     expiresAt
 ) {
-
-    const query = `
+    const result = await sql`
         INSERT INTO refresh_tokens (
             patient_id,
             token_hash,
             expires_at
         )
-        VALUES (
-            $1,
-            $2,
-            $3
-        )
+        VALUES (${patientId}, ${tokenHash}, ${expiresAt})
         RETURNING *;
     `;
 
-    const result = await sql.query(
-        query,
-        [
-            patientId,
-            tokenHash,
-            expiresAt
-        ]
-    );
-
-    return result.rows[0];
+    return result?.[0] ?? null;
 }
 
 export async function createRefreshTokenForDoctor(
@@ -37,29 +23,15 @@ export async function createRefreshTokenForDoctor(
     tokenHash,
     expiresAt
 ) {
-
-    const query = `
+    const result = await sql`
         INSERT INTO refresh_tokens (
             doctor_id,
             token_hash,
             expires_at
         )
-        VALUES (
-            $1,
-            $2,
-            $3
-        )
+        VALUES (${doctorId}, ${tokenHash}, ${expiresAt})
         RETURNING *;
     `;
 
-    const result = await sql.query(
-        query,
-        [
-            doctorId,
-            tokenHash,
-            expiresAt
-        ]
-    );
-
-    return result.rows[0];
+    return result?.[0] ?? null;
 }
