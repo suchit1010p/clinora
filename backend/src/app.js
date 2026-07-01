@@ -21,9 +21,11 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-import authRouter from "./routes/auth.routes.js"
+import authRouter from "./routes/auth.routes.js";
+import appointmentRouter from "./routes/appointment.route.js";
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/appointments", appointmentRouter);
 
 app.use((err, req, res, next) => {
     const statusCode = err?.statusCode || 500;
