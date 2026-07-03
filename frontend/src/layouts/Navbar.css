@@ -1,0 +1,128 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 6%;
+    box-shadow: 0 1px 3px -2px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+}
+
+/* LOGO */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    height: 42px;
+    width: 42px;
+}
+
+.logo p {
+    font-size: clamp(16px, 2vw, 20px);
+    font-weight: 500;
+    color: #171717;
+}
+
+/* NAV MENU */
+.nav-menu {
+    display: flex;
+    gap: 28px;
+    list-style: none;
+    font-size: 17px;
+    font-weight: 400;
+    color: #505050;
+}
+
+.nav-menu li {
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-menu li:hover {
+    color: #14b8a6;
+    transform: translateY(-2px);
+}
+
+/* underline animation */
+.nav-menu li::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0%;
+    height: 2px;
+    background: #14b8a6;
+    transition: width 0.3s ease;
+}
+
+.nav-menu li:hover::after {
+    width: 100%;
+}
+
+/* CTA BUTTON */
+.nav-start {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 18px;
+    border-radius: 50px;
+
+    border: 1px solid #111;
+    text-decoration: none;
+
+    color: #454545;
+    font-weight: 500;
+
+    transition: all 0.3s ease;
+}
+
+.nav-start:hover {
+    background: linear-gradient(135deg, #111, #1f2937);
+    color: #fff;
+}
+
+.arrow {
+    transition: transform 0.3s ease;
+}
+
+.nav-start:hover .arrow {
+    transform: translateX(5px);
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .nav-menu {
+        gap: 18px;
+        font-size: 15px;
+    }
+
+    .nav-start {
+        padding: 8px 14px;
+        font-size: 14px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .nav-menu {
+        display: none;
+    }
+
+    .nav-start {
+        padding: 8px 14px;
+    }
+
+    .logo p {
+        font-size: 18px;
+    }
+}
