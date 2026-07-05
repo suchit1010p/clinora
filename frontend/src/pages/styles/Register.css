@@ -1,0 +1,25 @@
+.register-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(
+        135deg,
+        #f0fdfa,
+        #ecfeff,
+        #ffffff
+    );
+
+    padding: 20px;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgb(0, 0, 0, 0.08);
+}
+

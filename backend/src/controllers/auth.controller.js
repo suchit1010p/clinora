@@ -11,7 +11,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 export const Login = asyncHandler(async (req,res) => {
-    let { email, password, role } = req.body;
+    console.log("Login request received");
+    let { email, password } = req.body;
 
     email = email?.trim();
     password = password?.trim();
@@ -20,7 +21,7 @@ export const Login = asyncHandler(async (req,res) => {
         throw new ApiError(400, "email and password both required");
     }
 
-    const user = role === "patient" ? await getPatientByMail(email) : await getDoctorByMail(email);
+    const user = await getDoctorByMail(email);
 
 
     if (!user) {
@@ -34,7 +35,7 @@ export const Login = asyncHandler(async (req,res) => {
         throw new ApiError(401, "Invalid user credentials")
     }
 
-    const { accessToken, refreshToken } = role == 'patient' ? await generateAccessAndRefereshTokensForPatient(user.id) : await generateAccessAndRefereshTokensForDoctor(user.id)
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokensForDoctor(user.id)
     
     const safeuser = { ...user };
     delete safeuser.password_hash;
@@ -45,11 +46,12 @@ export const Login = asyncHandler(async (req,res) => {
         secure: process.env.NODE_ENV === "production",
     };
 
+    console.log("Login successful, sending response", { user: safeuser, accessToken });
+
     return res.status(200)
-        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
-            new ApiResponse(200, { user: safeuser }, "Login successful")
+            new ApiResponse(200, { user: safeuser, accessToken }, "Login successful")
         )
 }) 
 
@@ -88,9 +90,8 @@ export const RegisterDoctor = asyncHandler(async (req, res) => {
     };
 
     return res.status(201)
-        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(201, { doctor: safeDoctor }, "Registration successful"));
+        .json(new ApiResponse(201, { doctor: safeDoctor, accessToken }, "Registration successful"));
 });
 
 export const RegisterPatient = asyncHandler(async (req, res) => {
@@ -133,9 +134,8 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
     };
 
     return res.status(201)
-        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        .json(new ApiResponse(201, { patient: safePatient }, "Registration successful"));
+        .json(new ApiResponse(201, { patient: safePatient, accessToken }, "Registration successful"));
 });
 
 

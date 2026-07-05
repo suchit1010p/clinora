@@ -29,18 +29,18 @@
 }
 
 /* HEADER */
-.login-header {
+.header-text {
     text-align: center;
     margin-bottom: 25px;
 }
 
-.login-header h1 {
+.header-text h1 {
     font-size: 28px;
     color: #0f172a;
     margin-bottom: 6px;
 }
 
-.login-header p {
+.header-text p {
     color: #64748b;
     font-size: 14px;
 }
