@@ -49,6 +49,7 @@ export const Login = asyncHandler(async (req,res) => {
     console.log("Login successful, sending response", { user: safeuser, accessToken });
 
     return res.status(200)
+        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
             new ApiResponse(200, { user: safeuser, accessToken }, "Login successful")
@@ -90,6 +91,7 @@ export const RegisterDoctor = asyncHandler(async (req, res) => {
     };
 
     return res.status(201)
+        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(new ApiResponse(201, { doctor: safeDoctor, accessToken }, "Registration successful"));
 });
@@ -134,6 +136,7 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
     };
 
     return res.status(201)
+        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(new ApiResponse(201, { patient: safePatient, accessToken }, "Registration successful"));
 });
@@ -188,7 +191,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     return res.status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", newRefreshToken, options)
-        .json(new ApiResponse(200, { user: safeUser }, "Token refreshed"));
+        .json(new ApiResponse(200, { user: safeUser, accessToken }, "Token refreshed"));
 });
 
 export const getMe = asyncHandler(async (req, res) => {

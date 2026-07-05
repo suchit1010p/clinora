@@ -1,25 +1,20 @@
-import React from 'react'
 import Navbar from '../layouts/Navbar'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import "./styles/Welcome.css"
 import { useSelector, useDispatch } from 'react-redux'
 import { refreshAuth } from '../features/auth/authSlice'
 
 function WelcomePage() {
-    const { user } = useSelector((state) => state.auth)
+    const { user, checkingAuth, authChecked } = useSelector((state) => state.auth)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        console.log("WelcomePage useEffect called, user:", user)
-        console.log("Cookies:", document.cookie.includes("refreshToken"))
-        // is user does not exist and cookies has refresh token then refresh the token and set the user in redux store
-        if (!user && document.cookie.includes("refreshToken")) {
-            console.log("refreshing token exists so dispatching refreshAccessToken called")
+        if (!user && !checkingAuth && !authChecked) {
             dispatch(refreshAuth())
         }
-    })
+    }, [authChecked, checkingAuth, dispatch, user])
   return (
     <div>
     <Navbar />
@@ -37,7 +32,7 @@ function WelcomePage() {
 
         <Link
             className="welcome-booking"
-            to={user ? "/appointment" : "/login"}
+            to={user ? "/home" : "/login"}
         >
             Book Appointment
             <ArrowRight className="arrow" />

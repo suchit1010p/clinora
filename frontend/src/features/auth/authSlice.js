@@ -48,6 +48,8 @@ const authSlice = createSlice({
         user: null,
         message: null,
         loading: false,
+        checkingAuth: false,
+        authChecked: false,
         token: null,
         error: null
     },
@@ -61,6 +63,8 @@ const authSlice = createSlice({
             state.user = null;
             state.message = null;
             state.loading = false;
+            state.checkingAuth = false;
+            state.authChecked = true;
             state.token = null;
             state.error = null;
         }
@@ -78,6 +82,7 @@ const authSlice = createSlice({
             state.token = action.payload.data.accessToken
             state.message = action.payload.message
             state.loading = false
+            state.authChecked = true
             console.log(state.message)
         })
         builder.addCase(loginAuth.rejected, (state, action) => {
@@ -96,14 +101,28 @@ const authSlice = createSlice({
             state.token = action.payload.data.accessToken
             state.message = action.payload.message
             state.loading = false
+            state.authChecked = true
             console.log(state.user)
         })
         builder.addCase(registerAuth.rejected, (state, action) => {
             state.error = action.payload?.message || action.payload
             state.loading = false
         })
+        builder.addCase(refreshAuth.pending, (state) => {
+            state.checkingAuth = true
+        })
         builder.addCase(refreshAuth.fulfilled, (state, action) => {
+            state.user = action.payload.data.user
             state.token = action.payload.data.accessToken
+            state.checkingAuth = false
+            state.authChecked = true
+            state.error = null
+        })
+        builder.addCase(refreshAuth.rejected, (state) => {
+            state.user = null
+            state.token = null
+            state.checkingAuth = false
+            state.authChecked = true
         })
     }
 })
