@@ -14,7 +14,7 @@ function ProtectedRoute() {
   }, [authChecked, checkingAuth, dispatch, user])
 
   if (checkingAuth || !authChecked) {
-    return null
+    return <div className="loading">loading...</div>
   }
 
   if (!user) {
