@@ -11,7 +11,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 
 export const Login = asyncHandler(async (req,res) => {
-    console.log("Login request received");
     let { email, password } = req.body;
 
     email = email?.trim();
@@ -46,7 +45,6 @@ export const Login = asyncHandler(async (req,res) => {
         secure: process.env.NODE_ENV === "production",
     };
 
-    console.log("Login successful, sending response", { user: safeuser, accessToken });
 
     return res.status(200)
         .cookie("accessToken", accessToken, options)
