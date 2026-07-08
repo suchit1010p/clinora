@@ -369,3 +369,15 @@ tbody tr:hover {
     overflow-x: auto;
   }
 }
+
+@media(max-width: 768px) {
+    .page-header {
+        justify-content: center;
+    }
+    .page-header p {
+        display: none;
+    }
+    .notification {
+        display: none;
+    }
+}

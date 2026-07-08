@@ -32,7 +32,7 @@ function WelcomePage() {
 
         <Link
             className="welcome-booking"
-            to={user ? "/home" : "/login"}
+            to={user ? "/appointments" : "/login"}
         >
             Book Appointment
             <ArrowRight className="arrow" />

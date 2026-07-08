@@ -17,6 +17,7 @@
   align-items: center;
   gap: 18px;
   margin-bottom: 40px;
+  flex-wrap: wrap;
 }
 
 .booking-top h1 {
@@ -33,18 +34,32 @@
 }
 
 .back-btn {
-  width: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 14px;
+  min-width: 120px;
   height: 46px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #e5e7eb;
   background: white;
+  color: #111827;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
   transition: .25s;
 }
 
 .back-btn:hover {
   background: #f3f4f6;
+}
+
+.back-btn::before {
+  content: '←';
+  display: inline-block;
+  font-size: 1rem;
+  margin-right: 6px;
 }
 
 /* ===========================
@@ -319,18 +334,31 @@
 
 @media (max-width:768px) {
 
+  .booking-page {
+    padding: 20px 16px;
+  }
+
+  .booking-top {
+    justify-content: space-between;
+    width: 100%;
+  }
+
   .booking-progress {
     overflow-x: auto;
     justify-content: flex-start;
     padding-bottom: 10px;
   }
 
+  .progress-step {
+    min-width: 110px;
+  }
+
   .progress-line {
-    width: 80px;
+    width: 60px;
   }
 
   .booking-card {
-    padding: 25px;
+    padding: 22px;
   }
 
   .input-grid,

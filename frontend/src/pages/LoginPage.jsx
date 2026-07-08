@@ -18,7 +18,7 @@ function LoginPage() {
     useEffect(() => {
         if (message == "Login successful" && user) {
             setTimeout(() => {
-                navigate("/home")
+                navigate("/appointments")
             }, 500)
         }
     }, [message, user, dispatch])  

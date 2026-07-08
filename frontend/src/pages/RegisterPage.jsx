@@ -236,7 +236,7 @@ function RegisterPage() {
     useEffect(() => {
         if (user) {
             setTimeout(() => {
-                navigate("/home")
+                navigate("/appointments")
             }
             , 500)
         }

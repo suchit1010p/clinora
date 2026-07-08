@@ -133,8 +133,9 @@ const AppointmentBookingPage = () => {
                 <button
                     className="back-btn"
                     onClick={() => navigate("/appointments")}
+                    type="button"
                 >
-                    ← Back
+                    Back
                 </button>
 
                 <div>

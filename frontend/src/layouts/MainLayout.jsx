@@ -16,7 +16,7 @@ import { useState } from "react";
 function MainLayout() {
     const { user } = useSelector((state) => state.auth);
 
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     return (
         <div className="home-page">
@@ -39,15 +39,7 @@ function MainLayout() {
 
                 {/* Navigation */}
                 <div className="navlinks">
-                    <NavLink
-                        to="/home"
-                        className={({ isActive }) =>
-                            isActive ? "navlink-buttons active" : "navlink-buttons"
-                        }
-                    >
-                        <House className="navicons" />
-                        <span>Home</span>
-                    </NavLink>
+                    
 
                     <NavLink
                         to="/appointments"
