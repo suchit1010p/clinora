@@ -8,14 +8,25 @@ import {
     CircleUser,
     House,
     Users,
+    Menu,
+    X
 } from "lucide-react";
+import { useState } from "react";
 
 function MainLayout() {
     const { user } = useSelector((state) => state.auth);
 
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
     return (
         <div className="home-page">
-            <div className="sidebar">
+            <button
+                className="menu-btn"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+                {sidebarOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+            <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
                 {/* Logo */}
                 <div className="logo">
                     <img src="/faviconIcon.png" alt="Clinora" />

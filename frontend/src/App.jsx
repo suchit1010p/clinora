@@ -9,6 +9,8 @@ import RegisterPage from './pages/RegisterPage'
 import MainLayout from './layouts/MainLayout'
 import HomePage from './pages/HomePage'
 import ProtectedRoute from './routes/ProtectedRoute'
+import AppointmentPage from './pages/AppointmentPage'
+import PatientPage from './pages/patientsPage'
 
 function App() {
     return (
@@ -27,6 +29,8 @@ function App() {
             <Route element={<ProtectedRoute />}>
                 <Route element={<MainLayout />}>
                     <Route path='/home' element={<HomePage />} />
+                    <Route path='/appointments' element={<AppointmentPage />} />
+                    <Route path='/patients' element={<PatientPage />} />
                 </Route>
             </Route>
 

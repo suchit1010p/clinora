@@ -35,3 +35,60 @@ export async function getAppointmentByName(username) {
     return result?.[0] ?? null;
 }
 
+// get appointments in pagination by doctorId
+export async function getAppointmentsPaginated(doctorId, page, limit) {
+    const offset = (page - 1) * limit;
+
+    const result = await sql`
+        SELECT
+            a.id,
+            a.status,
+            a.scheduled_at,
+            a.completed_at,
+            a.created_at,
+
+            p.id AS patient_id,
+            p.name AS patient_name,
+            p.email,
+            p.mobile,
+            p.sex,
+            p.date_of_birth
+
+        FROM appointments AS a
+
+        INNER JOIN patients AS p
+            ON a.patient_id = p.id
+
+        WHERE a.doctor_id = ${doctorId}
+
+        ORDER BY a.scheduled_at DESC
+
+        LIMIT ${limit}
+        OFFSET ${offset};
+    `;
+    return result;
+}
+
+export async function getAppointmentKPIs(doctorId) {
+    const result = await sql`
+        SELECT 
+            COUNT(*) AS total_appointments,
+
+            COUNT(*) FILTER (
+                WHERE status = 'completed'
+            ) AS completed_appointments,
+
+            COUNT(*) FILTER (
+                WHERE status = 'pending'
+            ) AS upcoming_appointments,
+
+            COUNT(*)FILTER (
+                WHERE status = 'cancelled'
+            ) AS cancelled_appointments
+        
+        FROM appointments
+        WHERE doctor_id = ${doctorId};
+    `
+
+    return result
+}
