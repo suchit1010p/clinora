@@ -92,3 +92,21 @@ export async function getAppointmentKPIs(doctorId) {
 
     return result
 }
+
+
+export const deleteAppointment = async (appointmentId) => {
+    await sql`
+        DELETE FROM appointments
+        WHERE id = ${appointmentId};
+    `;
+}
+
+export const updateAppointmentStatus = async (appointmentId, status) => {
+    const result = await sql`
+        UPDATE appointments
+        SET status = ${status}
+        WHERE id = ${appointmentId}
+        RETURNING *;
+    `;
+    return result[0];
+}

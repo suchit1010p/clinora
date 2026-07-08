@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken"
-import { asyncHandler } from "../utils/asyncHandler"
-import { ApiError } from "../utils/ApiError"
-import { getDoctorById } from "../repositories/doctor.Repository"
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { ApiError } from "../utils/ApiError.js"
+import { getDoctorById } from "../repositories/doctor.Repository.js"
 
 
 export const verifyDoctorJWT = async (req, res, next) => {

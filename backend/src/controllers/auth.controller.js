@@ -139,6 +139,67 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
         .json(new ApiResponse(201, { patient: safePatient, accessToken }, "Registration successful"));
 });
 
+export const RegisterPatientForBooking = asyncHandler(async (req, res) => {
+    let { name, dateOfBirth, sex, mobile, email, password } = req.body;
+
+    name = name?.trim();
+    dateOfBirth = dateOfBirth?.trim();
+    sex = sex?.trim();
+    mobile = mobile?.trim();
+    email = email?.trim();
+    password = password?.trim();
+
+    if (!name || !dateOfBirth || !sex || !mobile || !email || !password) {
+        throw new ApiError(400, "name, dateOfBirth, sex, mobile, email and password are required");
+    }
+
+    const existingByEmail = await getPatientByMail(email);
+    if (existingByEmail) {
+        throw new ApiError(409, "patient with this email already exists");
+    }
+
+    const existingByMobile = await getPatientByMobile(mobile);
+    if (existingByMobile) {
+        throw new ApiError(409, "patient with this mobile already exists");
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const patient = await createPatient({ name, dateOfBirth, sex, mobile, email, passwordHash });
+
+    const safePatient = { ...patient };
+    delete safePatient.password_hash;
+
+    return res.status(201).json(new ApiResponse(201, { patient: safePatient }, "Patient created for booking"));
+});
+
+export const checkPatientForBooking = asyncHandler(async (req, res) => {
+    const { email, mobile } = req.query;
+
+    if (!email && !mobile) {
+        throw new ApiError(400, "Email or mobile is required to find the patient");
+    }
+
+    let patient = null;
+
+    if (email) {
+        patient = await getPatientByMail(email.trim());
+    }
+
+    if (!patient && mobile) {
+        patient = await getPatientByMobile(mobile.trim());
+    }
+
+    if (!patient) {
+        throw new ApiError(404, "Patient not found");
+    }
+
+    const safePatient = { ...patient };
+    delete safePatient.password_hash;
+
+    return res.status(200).json(new ApiResponse(200, { patient: safePatient }, "Patient found"));
+});
+
 
 // refreshAccessToken 
 

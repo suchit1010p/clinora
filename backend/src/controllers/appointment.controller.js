@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getDoctorById } from "../repositories/doctor.Repository.js";
 import { getPatientById } from "../repositories/patient.Repository.js";
-import { createAppointment, getAppointmentKPIs, getAppointmentsPaginated } from "../repositories/appointment.Repository.js";
+import { createAppointment, getAppointmentById, getAppointmentKPIs, getAppointmentsPaginated, updateAppointmentStatus, deleteAppointment } from "../repositories/appointment.Repository.js";
 
 export const createAppointmentController = asyncHandler(async (req, res) => {
     const { patientId, doctorId, scheduledAt } = req.body;
@@ -40,13 +40,13 @@ export const createAppointmentController = asyncHandler(async (req, res) => {
 
 export const getAppointmentsPaginatedController = asyncHandler(async (req, res) => {
     
-    const doctorId = req.user.id;
+    const doctorId = req.doctor.id;
 
     const pageNumber =
-        Number(req.body.page) || 1;
+        Number(req.query.page) || 1;
 
     const pageSize =
-        Number(req.body.limit) || 10;
+        Number(req.query.limit) || 10;
 
     if (pageNumber < 1) {
         throw new ApiError(
@@ -81,6 +81,58 @@ export const getAppointmentsPaginatedController = asyncHandler(async (req, res) 
 });
 
 export const getAppointmentKPIsController = asyncHandler(async (req, res) => {
-    return await getAppointmentKPIs(req.user.id);
+    const result = await getAppointmentKPIs(req.doctor.id);
+    return res.status(200).json(new ApiResponse(200, result, "Appointment KPIs retrieved successfully"));
 })
+
+export const changeAppointmentStatusController = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.body;
+    const { status } = req.body;
+
+    if (!appointmentId || !status) {
+        throw new ApiError(400, "appointmentId and status are required");
+    }
+
+    const appointment = await getAppointmentById(appointmentId);
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    if (appointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "You are not authorized to change the status of this appointment");
+    }
+
+    const validStatuses = ["pending", "completed", "cancelled"];
+    if (!validStatuses.includes(status)) {
+        throw new ApiError(400, "Invalid status value");
+    }
+
+    const updatedAppointment = await updateAppointmentStatus(appointmentId, status);
+
+    return res.status(200).json(new ApiResponse(200, { appointment: updatedAppointment }, "Appointment status updated successfully"));
+});
+
+
+
+
+export const deleteAppointmentController = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.body;
+
+    if (!appointmentId) {
+        throw new ApiError(400, "appointmentId is required");
+    }
+
+    const appointment = await getAppointmentById(appointmentId);
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    if (appointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "You are not authorized to delete this appointment");
+    }
+
+    await deleteAppointment(appointmentId);
+
+    return res.status(200).json(new ApiResponse(200, null, "Appointment deleted successfully"));
+});
 

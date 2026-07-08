@@ -11,6 +11,8 @@ import HomePage from './pages/HomePage'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AppointmentPage from './pages/AppointmentPage'
 import PatientPage from './pages/patientsPage'
+import AppointmentBookingPage from './pages/AppointmentBookingPage'
+
 
 function App() {
     return (
@@ -30,6 +32,7 @@ function App() {
                 <Route element={<MainLayout />}>
                     <Route path='/home' element={<HomePage />} />
                     <Route path='/appointments' element={<AppointmentPage />} />
+                    <Route path='/appointments/create' element={<AppointmentBookingPage />} />
                     <Route path='/patients' element={<PatientPage />} />
                 </Route>
             </Route>
