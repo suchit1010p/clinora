@@ -23,9 +23,11 @@ app.use(cookieParser());
 
 import authRouter from "./routes/auth.routes.js";
 import appointmentRouter from "./routes/appointment.route.js";
+import patientRouter from "./routes/patient.route.js";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/appointments", appointmentRouter);
+app.use("/api/v1/patients", patientRouter)
 
 app.use((err, req, res, next) => {
     const statusCode = err?.statusCode || 500;
