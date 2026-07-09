@@ -1,55 +1,31 @@
-import React from "react";
-import { Bell, Search, Plus, Eye, Pencil, Trash2, DownloadCloud, Users, Heart } from "lucide-react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Bell, Search, Plus, Eye, Pencil, Trash2, Users } from "lucide-react";
+import { getPatients } from "../features/patients/patientSlice";
+import { getPatientKpi } from "../features/patients/patientKpiSlice";
 import "./styles/Patients.css";
 
-const samplePatients = [
-  {
-    id: "PT-1001",
-    name: "Anjali Verma",
-    age: 28,
-    gender: "Female",
-    phone: "9876543210",
-    email: "anjali.verma@gmail.com",
-    lastVisit: "May 24, 2025",
-    appointments: 5,
-    status: "Active",
-  },
-  {
-    id: "PT-1002",
-    name: "Rohit Patel",
-    age: 34,
-    gender: "Male",
-    phone: "9123456780",
-    email: "rohit.patel@gmail.com",
-    lastVisit: "May 22, 2025",
-    appointments: 3,
-    status: "Active",
-  },
-  {
-    id: "PT-1003",
-    name: "Suresh Kumar",
-    age: 62,
-    gender: "Male",
-    phone: "9988776655",
-    email: "suresh.kumar@gmail.com",
-    lastVisit: "May 18, 2025",
-    appointments: 8,
-    status: "Active",
-  },
-  {
-    id: "PT-1005",
-    name: "Amit Joshi",
-    age: 45,
-    gender: "Male",
-    phone: "9012345678",
-    email: "amit.joshi@gmail.com",
-    lastVisit: "Apr 30, 2025",
-    appointments: 6,
-    status: "Inactive",
-  },
-];
-
 const PatientsPage = () => {
+  const dispatch = useDispatch();
+  const { items: patients, loading: patientsLoading } = useSelector((state) => state.patient || {});
+  const { items: patientKpi } = useSelector((state) => state.patientKpi || {});
+
+  useEffect(() => {
+    dispatch(getPatients({ page: 1, limit: 10 }));
+    dispatch(getPatientKpi());
+  }, [dispatch]);
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    return new Date(value).toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const getInitial = (name = "") => name.charAt(0)?.toUpperCase() || "P";
+
   return (
     <div className="patients-page">
       <div className="page-header">
@@ -68,7 +44,7 @@ const PatientsPage = () => {
           <div className="icon blue"><Users /></div>
           <div className="card-content">
             <span>Total Patients</span>
-            <h2>156</h2>
+            <h2>{patientKpi?.total_patients ?? 0}</h2>
             <small>All time</small>
           </div>
         </div>
@@ -77,17 +53,8 @@ const PatientsPage = () => {
           <div className="icon green"><Plus /></div>
           <div className="card-content">
             <span>New This Month</span>
-            <h2>12</h2>
+            <h2>{patientKpi?.new_this_month ?? 0}</h2>
             <small>This month</small>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="icon orange"><Heart /></div>
-          <div className="card-content">
-            <span>Active Patients</span>
-            <h2>142</h2>
-            <small>Currently receiving care</small>
           </div>
         </div>
       </div>
@@ -109,11 +76,7 @@ const PatientsPage = () => {
 
           </div>
 
-          <div className="actions-row">
-            <button className="add-btn">
-              <Plus size={16} /> Add Patient
-            </button>
-          </div>
+          
         </div>
 
         <table className="patients-table">
@@ -123,51 +86,51 @@ const PatientsPage = () => {
               <th>Patient</th>
               <th>Age / Gender</th>
               <th>Contact</th>
-              <th>Last Visit</th>
+              <th>Joined</th>
               <th>Total Appointments</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {samplePatients.map((p, idx) => (
-              <tr key={p.id}>
-                <td>{idx + 1}</td>
-                <td>
-                  <div className="patient-info">
-                    <div className="avatar">{p.name.split(" ")[0][0]}</div>
-                    <div>
-                      <div className="patient-name">{p.name}</div>
-                      <div className="patient-id">{p.id}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div>{p.age} / {p.gender}</div>
-                </td>
-                <td>
-                  <div>{p.phone}</div>
-                  <div className="muted">{p.email}</div>
-                </td>
-                <td>{p.lastVisit}</td>
-                <td>{p.appointments}</td>
-                <td>
-                  <span className={`pill ${p.status === "Active" ? "active" : "inactive"}`}>{p.status}</span>
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button className="action-btn view"><Eye size={16} /></button>
-                    <button className="action-btn edit"><Pencil size={16} /></button>
-                    <button className="action-btn delete"><Trash2 size={16} /></button>
-                  </div>
-                </td>
+            {patientsLoading ? (
+              <tr>
+                <td colSpan="7" className="text-center">Loading patients...</td>
               </tr>
-            ))}
+            ) : (
+              patients.map((patient, idx) => (
+                <tr key={patient.id}>
+                  <td>{idx + 1}</td>
+                  <td>
+                    <div className="patient-info">
+                      <div className="avatar">{getInitial(patient.name)}</div>
+                      <div>
+                        <div className="patient-name">{patient.name}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <p>{Math.floor((Date.now() - new Date(patient.date_of_birth)) / (1000 * 60 * 60 * 24 * 365))} Years</p>
+                    <p className="muted">{patient.sex}</p>
+                    </td>
+                  <td>
+                    <div>{patient.mobile}</div>
+                    <div className="muted">{patient.email}</div>
+                  </td>
+                  <td>{formatDate(patient.created_at)}</td>
+                  <td>{patient.appointment_count}</td>
+                  <td>
+                    <div className="action-buttons">
+                      <button className="action-btn view"><Eye size={16} /></button>
+                      <button className="action-btn delete"><Trash2 size={16} /></button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
 
-        <div className="table-footer">Showing 1 to 7 of 156 patients</div>
-
+        <div className="table-footer">Showing {patients.length} patients</div>
       </div>
     </div>
   );
