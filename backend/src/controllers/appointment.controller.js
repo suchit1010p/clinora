@@ -3,7 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getDoctorById } from "../repositories/doctor.Repository.js";
 import { getPatientById } from "../repositories/patient.Repository.js";
-import { createAppointment, getAppointmentById, getAppointmentKPIs, getAppointmentsPaginated, updateAppointmentStatus, deleteAppointment } from "../repositories/appointment.Repository.js";
+import { createAppointment, getAppointmentById, getAppointmentKPIs, getAppointmentsPaginated, updateAppointmentStatus, deleteAppointment, getAppointment } from "../repositories/appointment.Repository.js";
 
 export const createAppointmentController = asyncHandler(async (req, res) => {
     const { patientId, doctorId, scheduledAt } = req.body;
@@ -83,6 +83,19 @@ export const getAppointmentsPaginatedController = asyncHandler(async (req, res) 
 export const getAppointmentKPIsController = asyncHandler(async (req, res) => {
     const result = await getAppointmentKPIs(req.doctor.id);
     return res.status(200).json(new ApiResponse(200, result, "Appointment KPIs retrieved successfully"));
+})
+
+export const getAppointmentController = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.params;
+    let result 
+    try {
+        result = await getAppointment(req.doctor.id);
+    } catch (error) {
+        throw new ApiError(400, "error while getting the appointment data")
+    }
+
+    
+    return res.status(200).json(new ApiResponse(200, result, "Appointment data retrieved successfully"));
 })
 
 export const changeAppointmentStatusController = asyncHandler(async (req, res) => {

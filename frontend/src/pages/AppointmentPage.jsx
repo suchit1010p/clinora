@@ -15,7 +15,7 @@ import {
 import "./styles/Appointments.css";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { getKPI } from "../features/appointments/kpiSlice.js";
 import { getAppointments, updateStatus, deleteAppointment } from "../features/appointments/appointmentsSlice.js";
 
@@ -44,7 +44,7 @@ import { getAppointments, updateStatus, deleteAppointment } from "../features/ap
 
 const AppointmentPage = () => {
     const kpiData = useSelector((state) => state.kpi.items);
-    const appointments = useSelector((state) => state.appointment.items);
+    const appointments = useSelector((state) => state.appointments.items);
     console.log(appointments)
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -259,10 +259,11 @@ const AppointmentPage = () => {
                                             <Pencil size={16} />
                                         </button>
                                         {statusMenu === appointment.id && renderStatuscard(appointment.id)}
-                                        
-                                        <button className="action-btn view">
-                                            <Eye size={16} />
-                                        </button>
+                                        <Link key={appointment.id} to={`/appointments/${appointment.id}`}>
+                                            <button className="action-btn view">
+                                                <Eye size={16} />
+                                            </button>
+                                        </Link>
                                         <button className="action-btn delete" onClick={() => handleDeleteAppointment(appointment.id)}>
                                             <Trash2 size={16} />
                                         </button>

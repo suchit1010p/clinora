@@ -112,3 +112,12 @@ export async function getPatientKPIs(doctorId) {
 
     return result?.[0] ?? null;
 }
+
+
+export const getPatient = async (patientId) => {
+    const result = await sql`
+        SELECT * FROM patients WHERE id = ${patientId}
+    `
+
+    return result[0]
+}

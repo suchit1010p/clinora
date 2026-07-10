@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getDoctorById } from "../repositories/doctor.Repository.js";
-import { getPatientById, getPatientKPIs, getPatients } from "../repositories/patient.Repository.js";
+import { getPatient, getPatientById, getPatientKPIs, getPatients } from "../repositories/patient.Repository.js";
 
 export const getAllPatientController = asyncHandler(async (req, res) => {
     const doctorId = req.doctor.id;
@@ -41,4 +41,20 @@ export const getAllPatientController = asyncHandler(async (req, res) => {
 export const getPatientKPIsController = asyncHandler(async (req, res) => {
     const result = await getPatientKPIs(req.doctor.id);
     return res.status(200).json(new ApiResponse(200, result, "patient KPIs retrieved successfully"));
+})
+
+export const getPatientController = asyncHandler(async (req, res) => {
+    const { patientId } = req.params; 
+
+    console.log(patientId)
+    let result
+    try {
+        result = await getPatient(patientId);
+        console.log(result)
+    } catch (error) {
+        throw new ApiError(400, "error in getting patient data")
+    }
+    const safeResult = {...result}
+    delete safeResult.password_hash
+    return res.status(200).json(new ApiResponse(200, safeResult, "patient data retrieved successfully"));
 })

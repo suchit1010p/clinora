@@ -7,7 +7,7 @@ import "./styles/Patients.css";
 
 const PatientsPage = () => {
   const dispatch = useDispatch();
-  const { items: patients, loading: patientsLoading } = useSelector((state) => state.patient || {});
+  const { items: patients, loading: patientsLoading } = useSelector((state) => state.patients || {});
   const { items: patientKpi } = useSelector((state) => state.patientKpi || {});
 
   useEffect(() => {

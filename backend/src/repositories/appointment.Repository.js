@@ -110,3 +110,11 @@ export const updateAppointmentStatus = async (appointmentId, status) => {
     `;
     return result[0];
 }
+
+export const getAppointment = async (appointmentId) => {
+    const result = await sql`
+        SELECT * FROM appointments WHERE id = ${appointmentId}
+    `
+
+    return result[0];
+}

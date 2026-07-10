@@ -11,7 +11,7 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AppointmentPage from './pages/AppointmentPage'
 import PatientsPage from './pages/patientsPage'
 import AppointmentBookingPage from './pages/AppointmentBookingPage'
-
+import ApmtUsagePage from './pages/ApmtUsagePage'
 
 function App() {
     return (
@@ -31,6 +31,7 @@ function App() {
                 <Route element={<MainLayout />}>
                     <Route path='/appointments' element={<AppointmentPage />} />
                     <Route path='/appointments/create' element={<AppointmentBookingPage />} />
+                    <Route path='/appointments/:appointmentId' element={<ApmtUsagePage />} />
                     <Route path='/patients' element={<PatientsPage />} />
                 </Route>
             </Route>
