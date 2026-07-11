@@ -140,7 +140,7 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
 });
 
 export const RegisterPatientForBooking = asyncHandler(async (req, res) => {
-    let { name, dateOfBirth, sex, mobile, email, password } = req.body;
+    let { name, dateOfBirth, sex, mobile, email, password, blood_group } = req.body;
 
     name = name?.trim();
     dateOfBirth = dateOfBirth?.trim();
@@ -148,8 +148,9 @@ export const RegisterPatientForBooking = asyncHandler(async (req, res) => {
     mobile = mobile?.trim();
     email = email?.trim();
     password = password?.trim();
+    blood_group = blood_group?.trim();
 
-    if (!name || !dateOfBirth || !sex || !mobile || !email || !password) {
+    if (!name || !dateOfBirth || !sex || !mobile || !email || !password || !blood_group) {
         throw new ApiError(400, "name, dateOfBirth, sex, mobile, email and password are required");
     }
 
@@ -165,7 +166,7 @@ export const RegisterPatientForBooking = asyncHandler(async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const patient = await createPatient({ name, dateOfBirth, sex, mobile, email, passwordHash });
+    const patient = await createPatient({ name, dateOfBirth, sex, mobile, email, passwordHash, blood_group });
 
     const safePatient = { ...patient };
     delete safePatient.password_hash;

@@ -35,8 +35,8 @@ const ApmtUsagePage = () => {
     const dispatch = useDispatch()
 
     const { appointmentId } = useParams()
-    const { patient } = useSelector((state) => state.patient.items)
-    const { appointmentData: appointment } = useSelector((state) => state.appointment.items)
+    const patient = useSelector((state) => state.patient.items) || {}
+    const appointment = useSelector((state) => state.appointment.items) || {}
 
     // patient =  {
     //     "id": 3,
@@ -59,15 +59,14 @@ const ApmtUsagePage = () => {
     // }
 
     useEffect(() => {
-        try {
-            dispatch(getAppointmentDetails(appointmentId))
+        dispatch(getAppointmentDetails(appointmentId))
+    }, [dispatch, appointmentId])
+
+    useEffect(() => {
+        if (appointment?.patient_id) {
             dispatch(getPatientDetails(appointment.patient_id))
-            console.log("appointment data fatched : \n", appointment)
-            console.log("patient data fatched : \n", patient)
-        } catch (error) {
-            console.log("error while fetching the details on screen load: \n",error)
         }
-    }, [patient, appointment])
+    }, [dispatch, appointment?.patient_id])
 
     const previousRecordings = [
         {
@@ -143,18 +142,18 @@ const ApmtUsagePage = () => {
                         </div>
 
                         <div className="patient-meta">
-                            <h3 className="patient-name">{patient.name}</h3>
-                            <p className="patient-subtitle">{patient.gender} • {patient.age} Years</p>
+                            <h3 className="patient-name">{patient?.name || 'Loading...'}</h3>
+                            <p className="patient-subtitle">{patient?.sex || 'N/A'} • {patient?.age ?? '-'} Years</p>
                         </div>
 
                         <div className="patient-contacts">
                             <div className="contact-item">
                                 <Phone size={16} />
-                                <span>{patient.phone}</span>
+                                <span>{patient?.mobile || 'No phone'}</span>
                             </div>
                             <div className="contact-item email-item">
                                 <Mail size={16} />
-                                <span>{patient.email}</span>
+                                <span>{patient?.email || 'No email'}</span>
                             </div>
                         </div>
 
@@ -166,28 +165,33 @@ const ApmtUsagePage = () => {
                                     <Droplet size={16} />
                                     Blood Group
                                 </span>
-                                <span className="detail-value">{patient.bloodGroup}</span>
+                                <span className="detail-value">{patient?.bloodGroup || 'N/A'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <Calendar size={16} />
                                     Date of Birth
                                 </span>
-                                <span className="detail-value">{patient.dob}</span>
+                                <span className="detail-value">
+                                    {patient?.date_of_birth
+                                        ? new Date(patient.date_of_birth).toLocaleDateString()
+                                        : 'N/A'}
+                                </span>
+
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <MapPin size={16} />
                                     Address
                                 </span>
-                                <span className="detail-value">{patient.address}</span>
+                                <span className="detail-value">{patient?.address || 'Not provided'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <AlertCircle size={16} />
                                     Allergies
                                 </span>
-                                <span className="detail-value">{patient.allergies}</span>
+                                <span className="detail-value">{patient?.allergies || 'None'}</span>
                             </div>
                         </div>
 
@@ -213,42 +217,42 @@ const ApmtUsagePage = () => {
                                     <User size={16} />
                                     Doctor
                                 </span>
-                                <span className="detail-value">{appointmentData.doctor}</span>
+                                <span className="detail-value">{appointment?.doctor || 'TBD'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <Calendar size={16} />
                                     Date
                                 </span>
-                                <span className="detail-value">{appointmentData.date}</span>
+                                <span className="detail-value">{appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleDateString() : 'N/A'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <Clock size={16} />
                                     Time
                                 </span>
-                                <span className="detail-value">{appointmentData.time}</span>
+                                <span className="detail-value">{appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <AlertCircle size={16} />
                                     Status
                                 </span>
-                                <span className="status-badge">{appointmentData.status}</span>
+                                <span className="status-badge">{appointment?.status || 'Pending'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <FileText size={16} />
                                     Visit Type
                                 </span>
-                                <span className="detail-value">{appointmentData.visitType}</span>
+                                <span className="detail-value">{appointment?.visitType || 'Consultation'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
                                     <FileText size={16} />
                                     Reason
                                 </span>
-                                <span className="detail-value">{appointmentData.reason}</span>
+                                <span className="detail-value">{appointment?.reason || 'No reason provided'}</span>
                             </div>
                         </div>
                     </div>

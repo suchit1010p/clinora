@@ -22,6 +22,7 @@ const AppointmentBookingPage = () => {
         mobile: '',
         sex: 'male',
         dateOfBirth: '',
+        blood_group: 'O+'
     })
 
     const [scheduledAt, setScheduledAt] = useState('')
@@ -36,7 +37,7 @@ const AppointmentBookingPage = () => {
         setError(null)
         setSuccess(null)
 
-        const { name, email, mobile, sex, dateOfBirth } = patientForm
+        const { name, email, mobile, sex, dateOfBirth, blood_group } = patientForm
         if (!email && !mobile) {
             setError('Please provide patient email or mobile.')
             return
@@ -70,6 +71,7 @@ const AppointmentBookingPage = () => {
                             sex,
                             dateOfBirth,
                             password: 'sa',
+                            blood_group
                         })
                         const newPatient = registerResponse.data?.data?.patient
                         setPatient(newPatient)
@@ -270,7 +272,24 @@ const AppointmentBookingPage = () => {
                                     onChange={handleChange}
                                 />
                             </div>
+                            <div className="input-box">
+                                <label>BloodGroup</label>
 
+                                <select
+                                    name="blood_group"
+                                    value={patientForm.blood_group}
+                                    onChange={handleChange}
+                                >
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div className="footer-buttons">
