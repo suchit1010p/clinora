@@ -37,7 +37,6 @@ export const createAppointmentController = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, { appointment }, "Appointment created successfully"));
 });
 
-
 export const getAppointmentsPaginatedController = asyncHandler(async (req, res) => {
     
     const doctorId = req.doctor.id;
@@ -124,9 +123,6 @@ export const changeAppointmentStatusController = asyncHandler(async (req, res) =
 
     return res.status(200).json(new ApiResponse(200, { appointment: updatedAppointment }, "Appointment status updated successfully"));
 });
-
-
-
 
 export const deleteAppointmentController = asyncHandler(async (req, res) => {
     const { appointmentId } = req.body;
