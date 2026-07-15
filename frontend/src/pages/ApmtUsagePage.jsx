@@ -28,45 +28,49 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { getAppointmentDetails } from '../features/appointments/appointment/appointmentDetails'
-import { getPatientDetails } from '../features/patients/patient/patientDetailSlice'
+import { getAppointmentDetails, clearAppointmentDetails } from '../features/appointments/appointment/appointmentDetails'
+import { getPatientDetails, clearPatientDetails } from '../features/patients/patient/patientDetailSlice'
 
 const ApmtUsagePage = () => {
     const dispatch = useDispatch()
-
     const { appointmentId } = useParams()
-    const patient = useSelector((state) => state.patient.items) || {}
-    const appointment = useSelector((state) => state.appointment.items) || {}
 
-    // patient =  {
-    //     "id": 3,
-    //     "name": "prit",
-    //     "date_of_birth": "2005-05-19T18:30:00.000Z",
-    //     "sex": "male",
-    //     "mobile": "9265660527",
-    //     "email": "pri@gmail.com",
-    //     "created_at": "2026-07-08T01:44:09.633Z"
-    // }
+    const patient = useSelector((state) => state.patient.data)
+    const appointment = useSelector((state) => state.appointment.data)
+    const isPatientLoading = useSelector((state) => state.patient.loading)
+    const isAppointmentLoading = useSelector((state) => state.appointment.loading)
+    const { user } = useSelector((state) => state.auth)
 
-    // appointment = {
-    //     "id": 7,
-    //     "patient_id": 3,
-    //     "doctor_id": 7,
-    //     "status": "completed",
-    //     "scheduled_at": "2026-07-10T10:17:00.000Z",
-    //     "completed_at": null,
-    //     "created_at": "2026-07-08T01:44:31.465Z"
-    // }
+    const getAge = (dob) => {
+        if (!dob) return '-';
+        const birthDate = new Date(dob);
+        const difference = Date.now() - birthDate.getTime();
+        const age = Math.floor(difference / (1000 * 60 * 60 * 24 * 365.25));
+        return age >= 0 ? age : '-';
+    }
 
     useEffect(() => {
-        dispatch(getAppointmentDetails(appointmentId))
+        if (!appointmentId) return;
+
+        const loadData = async () => {
+            try {
+                const actionResult = await dispatch(getAppointmentDetails(appointmentId)).unwrap();
+                const patientId = actionResult?.data?.patient_id;
+                if (patientId) {
+                    dispatch(getPatientDetails(patientId));
+                }
+            } catch (err) {
+                console.error("Error loading appointment details:", err);
+            }
+        };
+
+        loadData();
+
+        return () => {
+            dispatch(clearAppointmentDetails());
+            dispatch(clearPatientDetails());
+        };
     }, [dispatch, appointmentId])
-
-    useEffect(() => {
-        if (appointment?.patient_id) {
-            dispatch(getPatientDetails(appointment.patient_id))
-        }
-    }, [dispatch, appointment?.patient_id])
 
     const previousRecordings = [
         {
@@ -142,8 +146,8 @@ const ApmtUsagePage = () => {
                         </div>
 
                         <div className="patient-meta">
-                            <h3 className="patient-name">{patient?.name || 'Loading...'}</h3>
-                            <p className="patient-subtitle">{patient?.sex || 'N/A'} • {patient?.age ?? '-'} Years</p>
+                            <h3 className="patient-name">{isPatientLoading ? 'Loading...' : (patient?.name || 'Loading...')}</h3>
+                            <p className="patient-subtitle">{patient?.sex || 'N/A'} • {getAge(patient?.date_of_birth)} Years</p>
                         </div>
 
                         <div className="patient-contacts">
@@ -165,7 +169,7 @@ const ApmtUsagePage = () => {
                                     <Droplet size={16} />
                                     Blood Group
                                 </span>
-                                <span className="detail-value">{patient?.bloodGroup || 'N/A'}</span>
+                                <span className="detail-value">{patient?.blood_group || 'N/A'}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">
@@ -217,7 +221,7 @@ const ApmtUsagePage = () => {
                                     <User size={16} />
                                     Doctor
                                 </span>
-                                <span className="detail-value">{appointment?.doctor || 'TBD'}</span>
+                                <span className="detail-value">{user?.name ? `Dr. ${user.name}` : (appointment?.doctor || 'TBD')}</span>
                             </div>
                             <div className="detail-row">
                                 <span className="detail-label">

@@ -88,7 +88,7 @@ export const getAppointmentController = asyncHandler(async (req, res) => {
     const { appointmentId } = req.params;
     let result 
     try {
-        result = await getAppointment(req.doctor.id);
+        result = await getAppointment(appointmentId);
     } catch (error) {
         throw new ApiError(400, "error while getting the appointment data")
     }

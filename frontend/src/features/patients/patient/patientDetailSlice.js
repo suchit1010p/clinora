@@ -6,34 +6,43 @@ export const getPatientDetails = createAsyncThunk('patients/patient', async (pat
         const result = await api.get(`patients/${patientId}`);
         return result.data;
     } catch (error) {
-        return thunkAPI.rejectWithValue(error.response.data)
+        return thunkApi.rejectWithValue(error.response?.data || error.message)
     }
 })
 
 const patientDetailSlice = createSlice({
     name: 'patient',
     initialState: {
-        items: [],
+        data: null,
         loading: false,
-        message: null
-
+        message: null,
+        error: null
     },
-    reducers: {},
+    reducers: {
+        clearPatientDetails: (state) => {
+            state.data = null;
+            state.loading = false;
+            state.message = null;
+            state.error = null;
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(getPatientDetails.pending, (state) => {
             state.loading = true;
             state.message = null;
-        }),
+            state.error = null;
+        });
         builder.addCase(getPatientDetails.fulfilled, (state, action) => {
             state.loading = false;
-            state.items = action.payload?.data;
-            state.message = action.payload?.message
-        }),
+            state.data = action.payload?.data;
+            state.message = action.payload?.message;
+        });
         builder.addCase(getPatientDetails.rejected, (state, action)=> {
-            state.error = action.payload?.message || action.payload
-            state.loading = false
-        })
+            state.error = action.payload?.message || action.payload;
+            state.loading = false;
+        });
     }
 });
 
-export default patientDetailSlice.reducer
+export const { clearPatientDetails } = patientDetailSlice.actions;
+export default patientDetailSlice.reducer;

@@ -1,6 +1,7 @@
 import { sql } from "../db/db.js";
 
 export async function createPatient({ name, dateOfBirth, sex, mobile, email, passwordHash, blood_group }) {
+
     const result = await sql`
         INSERT INTO patients (
             name,
@@ -9,12 +10,11 @@ export async function createPatient({ name, dateOfBirth, sex, mobile, email, pas
             mobile,
             email,
             password_hash,
-            blood_group,
+            blood_group
         )
-        VALUES (${name}, ${dateOfBirth}, ${sex}, ${mobile}, ${email}, ${passwordHash}, ${blood_group},)
+        VALUES (${name}, ${dateOfBirth}, ${sex}, ${mobile}, ${email}, ${passwordHash}, ${blood_group})
         RETURNING *;
     `;
-
     return result?.[0] ?? null;
 }
 
