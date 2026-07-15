@@ -10,6 +10,7 @@ import {
     Eye,
     Pencil,
     Trash2,
+    ChevronDown,
 } from "lucide-react";
 
 import "./styles/Appointments.css";
@@ -59,23 +60,55 @@ const AppointmentPage = () => {
 
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(10);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("All Status");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+    // Debounce search term
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [search]);
+
+    // Close dropdown on click outside
+    useEffect(() => {
+        if (!statusFilterOpen) return;
+        const handleOutsideClick = () => setStatusFilterOpen(false);
+        window.addEventListener("click", handleOutsideClick);
+        return () => window.removeEventListener("click", handleOutsideClick);
+    }, [statusFilterOpen]);
 
     useEffect(() => {
         dispatch(getKPI());
     }, [dispatch, appointments]);
 
     useEffect(() => {
-        dispatch(getAppointments({ page, limit }));
-    }, [dispatch, page, limit]);
+        dispatch(getAppointments({ 
+            page, 
+            limit,
+            search: debouncedSearch,
+            status: selectedStatus === "All Status" ? "" : selectedStatus,
+            startDate,
+            endDate
+        }));
+    }, [dispatch, page, limit, debouncedSearch, selectedStatus, startDate, endDate]);
 
 
     const renderStatuscard = (appointmentId) => (
         <div className="status-card">
             {STATUS.map((item, index) => (
-                <div key={index}>
-                    <button onClick={() => handleUpdateStatus(appointmentId, item)}>{item}</button>
-                    <hr />
-                </div>
+                <button 
+                    key={index} 
+                    className={`status-btn-${item}`}
+                    onClick={() => handleUpdateStatus(appointmentId, item)}
+                >
+                    {item}
+                </button>
             ))}
         </div>
     )
@@ -187,6 +220,8 @@ const AppointmentPage = () => {
                         <input
                             type="text"
                             placeholder="Search patient name or ID..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
                         />
                     </div>
 
@@ -201,17 +236,50 @@ const AppointmentPage = () => {
 
                 <div className="filters">
 
-                    <select>
-                        <option>All Status</option>
-                    </select>
+                    <div className="custom-filter-dropdown">
+                        <button 
+                            type="button" 
+                            className="dropdown-trigger-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setStatusFilterOpen(!statusFilterOpen);
+                            }}
+                        >
+                            <span>{selectedStatus}</span>
+                            <ChevronDown size={16} />
+                        </button>
+                        {statusFilterOpen && (
+                            <div className="dropdown-options-menu">
+                                {["All Status", "pending", "completed", "cancelled"].map((statusOption) => (
+                                    <button
+                                        key={statusOption}
+                                        type="button"
+                                        className={`dropdown-option-item ${statusOption.toLowerCase()}`}
+                                        onClick={() => {
+                                            setSelectedStatus(statusOption === "All Status" ? "All Status" : statusOption);
+                                            setStatusFilterOpen(false);
+                                        }}
+                                    >
+                                        {statusOption}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
 
-                    <input type="date" />
+                    <input 
+                        type="date" 
+                        value={startDate} 
+                        onChange={(e) => setStartDate(e.target.value)} 
+                        placeholder="Start Date"
+                    />
 
-                    <input type="date" />
-
-                    <select>
-                        <option>All Doctors</option>
-                    </select>
+                    <input 
+                        type="date" 
+                        value={endDate} 
+                        onChange={(e) => setEndDate(e.target.value)} 
+                        placeholder="End Date"
+                    />
 
                 </div>
 
@@ -235,22 +303,22 @@ const AppointmentPage = () => {
 
                         {appointments?.map((appointment, index) => (
                             <tr key={appointment.id}>
-                                <td>{index + 1}</td>
-                                <td>{appointment.patient_name}</td>
+                                <td data-label="#">{index + 1}</td>
+                                <td data-label="Patient">{appointment.patient_name}</td>
 
-                                <td>
+                                <td data-label="Age / Sex">
                                     <p>{Math.floor((Date.now() - new Date(appointment.date_of_birth)) / (1000 * 60 * 60 * 24 * 365))} Years</p>
-                                    <p>{appointment.sex}</p>
+                                    <p style={{ textTransform: 'capitalize' }}>{appointment.sex}</p>
                                 </td>
-                                <td>
+                                <td data-label="Contact">
                                     <p>{appointment.email}</p>
                                     <p>{appointment.mobile}</p>
                                 </td>
-                                <td>{new Date(appointment.scheduled_at).toLocaleDateString()}</td>
-                                <td>
+                                <td data-label="Scheduled At">{new Date(appointment.scheduled_at).toLocaleDateString()}</td>
+                                <td data-label="Status">
                                     <span className={`status ${appointment.status.toLowerCase()}`}>{appointment.status}</span>
                                 </td>
-                                <td>
+                                <td data-label="Actions">
                                     <div className="action-buttons">
 
                                         <button className="action-btn edit" onClick={() => (

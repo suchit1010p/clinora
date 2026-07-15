@@ -5,7 +5,14 @@ import api from "../../services/api";
 // get appointments in pagination by doctorId
 export const getAppointments = createAsyncThunk('appointments',async (pageData, thunkAPI) => {
     try {
-        const result = await api.get(`appointments?page=${pageData.page}&limit=${pageData.limit}`);
+        const { page, limit, search, status, startDate, endDate } = pageData;
+        let url = `appointments?page=${page}&limit=${limit}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
+        if (status) url += `&status=${encodeURIComponent(status)}`;
+        if (startDate) url += `&startDate=${encodeURIComponent(startDate)}`;
+        if (endDate) url += `&endDate=${encodeURIComponent(endDate)}`;
+        
+        const result = await api.get(url);
         return result.data;
     } catch (error) {
         return thunkAPI.rejectWithValue(error.response.data);

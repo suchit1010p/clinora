@@ -6,10 +6,6 @@ const AppointmentDetailsCard = ({ appointment, user }) => {
         <div className="apmt-card">
             <div className="apmt-card-header">
                 <h2 className="apmt-card-title">Appointment Details</h2>
-                <button className="apmt-card-edit">
-                    <Edit size={14} />
-                    <span>Edit</span>
-                </button>
             </div>
 
             <div className="patient-details-list" style={{ marginBottom: 0 }}>

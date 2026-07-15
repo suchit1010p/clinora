@@ -36,7 +36,8 @@ export async function getAppointmentByName(username) {
 }
 
 // get appointments in pagination by doctorId
-export async function getAppointmentsPaginated(doctorId, page, limit) {
+export async function getAppointmentsPaginated(doctorId, page, limit, filters = {}) {
+    const { search, status, startDate, endDate } = filters;
     const offset = (page - 1) * limit;
 
     const result = await sql`
@@ -60,6 +61,10 @@ export async function getAppointmentsPaginated(doctorId, page, limit) {
             ON a.patient_id = p.id
 
         WHERE a.doctor_id = ${doctorId}
+          AND (${status}::text IS NULL OR a.status = ${status})
+          AND (${startDate}::timestamp IS NULL OR a.scheduled_at >= ${startDate})
+          AND (${endDate}::timestamp IS NULL OR a.scheduled_at <= ${endDate})
+          AND (${search}::text IS NULL OR p.name ILIKE ${search} OR CAST(p.id AS TEXT) ILIKE ${search})
 
         ORDER BY a.scheduled_at DESC
 

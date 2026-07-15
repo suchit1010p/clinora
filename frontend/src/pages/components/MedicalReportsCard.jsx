@@ -157,7 +157,7 @@ const MedicalReportsCard = ({ appointmentId }) => {
 
                                 return (
                                     <tr key={report.id}>
-                                        <td>
+                                        <td data-label="File Name">
                                             <div className="report-file-cell">
                                                 <span className="pdf-icon-wrapper">
                                                     <FileText size={20} />
@@ -165,9 +165,9 @@ const MedicalReportsCard = ({ appointmentId }) => {
                                                 <span className="report-file-name" title={fileName}>{fileName}</span>
                                             </div>
                                         </td>
-                                        <td>{formattedDate}</td>
-                                        <td>{fileType || 'FILE'}</td>
-                                        <td>
+                                        <td data-label="Uploaded On">{formattedDate}</td>
+                                        <td data-label="Type">{fileType || 'FILE'}</td>
+                                        <td data-label="Actions">
                                             <div className="table-actions-cell">
                                                 <button 
                                                     className="action-icon-btn view" 

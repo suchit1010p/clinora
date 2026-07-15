@@ -39,9 +39,9 @@ function MainLayout() {
 
             {/* Mobile Backdrop Overlay */}
             {sidebarOpen && (
-                <div 
-                    className="sidebar-backdrop" 
-                    onClick={() => setSidebarOpen(false)} 
+                <div
+                    className="sidebar-backdrop"
+                    onClick={() => setSidebarOpen(false)}
                 />
             )}
 
@@ -79,28 +79,6 @@ function MainLayout() {
                     >
                         <Users className="navicons" />
                         <span>Patients</span>
-                    </NavLink>
-
-                    <NavLink
-                        to="/audio-files"
-                        className={({ isActive }) =>
-                            isActive ? "navlink-buttons active" : "navlink-buttons"
-                        }
-                        onClick={handleNavLinkClick}
-                    >
-                        <AudioLines className="navicons" />
-                        <span>Audio Files</span>
-                    </NavLink>
-
-                    <NavLink
-                        to="/ai-summaries"
-                        className={({ isActive }) =>
-                            isActive ? "navlink-buttons active" : "navlink-buttons"
-                        }
-                        onClick={handleNavLinkClick}
-                    >
-                        <Astroid className="navicons" />
-                        <span>AI Summaries</span>
                     </NavLink>
                 </div>
 

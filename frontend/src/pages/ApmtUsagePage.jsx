@@ -56,9 +56,6 @@ const ApmtUsagePage = () => {
                 <h1 className="apmt-page-title">Appointment Details</h1>
                 <div className="apmt-header-right">
                     <span className="apmt-id-badge">Appointment #{appointmentId || '1023'}</span>
-                    <button className="apmt-more-btn">
-                        <MoreVertical size={20} />
-                    </button>
                 </div>
             </div>
 

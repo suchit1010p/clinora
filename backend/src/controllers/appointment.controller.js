@@ -47,6 +47,8 @@ export const getAppointmentsPaginatedController = asyncHandler(async (req, res) 
     const pageSize =
         Number(req.query.limit) || 10;
 
+    const { search, status, startDate, endDate } = req.query;
+
     if (pageNumber < 1) {
         throw new ApiError(
             400,
@@ -67,7 +69,24 @@ export const getAppointmentsPaginatedController = asyncHandler(async (req, res) 
         throw new ApiError(404, "Doctor not found");
     }
 
-    const result = await getAppointmentsPaginated(doctorId, pageNumber, pageSize);
+    const searchParam = search ? `%${search}%` : null;
+    const statusParam = status && status !== "All Status" && status !== "all" ? status.toLowerCase() : null;
+    const startDateParam = startDate ? new Date(startDate) : null;
+    
+    let endDateParam = null;
+    if (endDate) {
+        // Set to end of day to include appointments on the last day fully
+        const date = new Date(endDate);
+        date.setHours(23, 59, 59, 999);
+        endDateParam = date;
+    }
+
+    const result = await getAppointmentsPaginated(doctorId, pageNumber, pageSize, {
+        search: searchParam,
+        status: statusParam,
+        startDate: startDateParam,
+        endDate: endDateParam
+    });
 
     return res.status(200).json(
         new ApiResponse(

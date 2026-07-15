@@ -14,10 +14,6 @@ const PatientDetailsCard = ({ patient, isLoading }) => {
         <div className="apmt-card">
             <div className="apmt-card-header">
                 <h2 className="apmt-card-title">Patient Details</h2>
-                <button className="apmt-card-edit">
-                    <Edit size={14} />
-                    <span>Edit</span>
-                </button>
             </div>
 
             <div className="patient-meta">
@@ -73,10 +69,6 @@ const PatientDetailsCard = ({ patient, isLoading }) => {
                 </div>
             </div>
 
-            <button className="view-profile-btn">
-                <span>View Full Profile</span>
-                <ChevronRight size={16} />
-            </button>
         </div>
     );
 };
