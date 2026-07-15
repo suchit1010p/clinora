@@ -10,6 +10,7 @@ router.get("/kpi", verifyDoctorJWT, getAppointmentKPIsController)
 router.post("/create", verifyDoctorJWT, createAppointmentController);
 router.delete("/delete", verifyDoctorJWT, deleteAppointmentController)
 router.patch("/status", verifyDoctorJWT, changeAppointmentStatusController)
+
 router.post("/:appointmentId/audio/upload", verifyDoctorJWT, uploadAudioFileToS3Controller)
 router.get("/:appointmentId/audio", verifyDoctorJWT, getAppointmentAudioFilesController)
 router.delete("/:appointmentId/audio/:audioId", verifyDoctorJWT, deleteAppointmentAudioFileController)
