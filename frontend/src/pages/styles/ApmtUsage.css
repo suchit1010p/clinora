@@ -313,20 +313,45 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  background: #dbeafe;
+  border: 1px solid #bfdbfe;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
 .record-dot {
   width: 12px;
   height: 12px;
-  background: #ef4444;
+  background: #2563eb;
   border-radius: 50%;
-  animation: pulse-dot 1.8s infinite ease-in-out;
+  transition: all 0.3s ease;
+}
+
+.record-dot.dot-pulsing {
+  background: #ef4444;
+  animation: pulse-dot 1.2s infinite ease-in-out;
+}
+
+.record-dot.dot-uploading {
+  background: #f59e0b;
+  animation: pulse-dot 1.5s infinite ease-in-out;
+}
+
+.record-dot.dot-error {
+  background: #dc2626;
+}
+
+.recording-banner.recording-active {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.recording-banner.recording-active .record-indicator {
+  background: #fee2e2;
+  border-color: #fca5a5;
 }
 
 @keyframes pulse-dot {
@@ -753,4 +778,47 @@
     width: 100%;
     justify-content: space-between;
   }
+}
+
+.audio-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 10;
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+}
+
+.audio-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.audio-dropdown-item:hover {
+  background-color: #f1f5f9;
+}
+
+.audio-dropdown-item.delete-action {
+  color: #ef4444;
+}
+
+.audio-dropdown-item.delete-action:hover {
+  background-color: #fef2f2;
 }

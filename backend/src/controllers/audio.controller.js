@@ -2,8 +2,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getAppointmentById } from "../repositories/appointment.Repository.js";
-import { createAudioFileEntry, getAudioFilesByAppointmentId } from "../repositories/audioFile.Repository.js";
-import { generatePresignedUploadUrl, generatePresignedDownloadUrl } from "../utils/s3.js";
+import { createAudioFileEntry, getAudioFilesByAppointmentId, getAudioFileById, deleteAudioFileEntry } from "../repositories/audioFile.Repository.js";
+import { generatePresignedUploadUrl, generatePresignedDownloadUrl, deleteFileFromS3 } from "../utils/s3.js";
 
 export const uploadAudioFileToS3Controller = asyncHandler(async (req, res) => {
     const { appointmentId } = req.params;
@@ -70,6 +70,46 @@ export const getAppointmentAudioFilesController = asyncHandler(async (req, res) 
 
     return res.status(200).json(
         new ApiResponse(200, audioFilesWithUrls, "Audio files retrieved successfully")
+    );
+});
+
+export const deleteAppointmentAudioFileController = asyncHandler(async (req, res) => {
+    const { appointmentId, audioId } = req.params;
+
+    if (!appointmentId || !audioId) {
+        throw new ApiError(400, "appointmentId and audioId are required");
+    }
+
+    const appointment = await getAppointmentById(appointmentId);
+    if (!appointment) {
+        throw new ApiError(404, "appointment doesn't exist");
+    }
+
+    if (appointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "you are not authorized to delete audio for this appointment");
+    }
+
+    const audioFile = await getAudioFileById(audioId);
+    if (!audioFile) {
+        throw new ApiError(404, "audio file doesn't exist");
+    }
+
+    if (audioFile.appointment_id !== Number(appointmentId)) {
+        throw new ApiError(400, "audio file does not belong to this appointment");
+    }
+
+    // 1. Delete file from AWS S3
+    try {
+        await deleteFileFromS3(audioFile.file_url);
+    } catch (s3Error) {
+        console.error("Failed to delete file from S3, continuing with DB deletion:", s3Error);
+    }
+
+    // 2. Delete database entry
+    await deleteAudioFileEntry(audioId);
+
+    return res.status(200).json(
+        new ApiResponse(200, null, "Audio file deleted successfully")
     );
 });
 

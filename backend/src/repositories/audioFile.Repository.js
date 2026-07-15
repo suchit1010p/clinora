@@ -23,3 +23,23 @@ export async function getAudioFilesByAppointmentId(appointmentId) {
 
     return result ?? [];
 }
+
+export async function getAudioFileById(id) {
+    const result = await sql`
+        SELECT id, file_url, appointment_id, created_at
+        FROM audio_files
+        WHERE id = ${id};
+    `;
+
+    return result?.[0] ?? null;
+}
+
+export async function deleteAudioFileEntry(id) {
+    const result = await sql`
+        DELETE FROM audio_files
+        WHERE id = ${id}
+        RETURNING *;
+    `;
+
+    return result?.[0] ?? null;
+}

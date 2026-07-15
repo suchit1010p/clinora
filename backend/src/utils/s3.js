@@ -1,5 +1,5 @@
 
-import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3 from "../db/aws.js";
 
@@ -32,4 +32,18 @@ const generatePresignedDownloadUrl = async (fileLocation) => {
     }
 };
 
-export { generatePresignedUploadUrl, generatePresignedDownloadUrl };
+const deleteFileFromS3 = async (fileLocation) => {
+    try {
+        const command = new DeleteObjectCommand({
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: fileLocation,
+        });
+
+        await s3.send(command);
+    } catch (error) {
+        console.error("Error deleting file from S3:", error);
+        throw new Error("Could not delete file from S3");
+    }
+};
+
+export { generatePresignedUploadUrl, generatePresignedDownloadUrl, deleteFileFromS3 };
