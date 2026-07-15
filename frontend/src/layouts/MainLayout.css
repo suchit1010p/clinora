@@ -242,3 +242,23 @@
     background: white;
     color: #0d3b8f;
 }
+
+/* ================= Mobile Sidebar Backdrop Overlay ================= */
+
+.sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 99; /* Below mobile menu-btn (100) and mobile sidebar (1000) */
+    backdrop-filter: blur(2.5px);
+    transition: opacity 0.3s ease;
+}
+
+@media (min-width: 769px) {
+    .sidebar-backdrop {
+        display: none;
+    }
+}
