@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, Play, Pause, MoreVertical, Sparkles, Send, Trash2, FileText } from 'lucide-react';
+import { Mic, Play, Pause, MoreVertical, Sparkles, Send, Trash2, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import api from '../../services/api.js';
 
@@ -14,6 +14,7 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
     const [durations, setDurations] = useState({});
     const [activeDropdownId, setActiveDropdownId] = useState(null);
     const [isTranscribing, setIsTranscribing] = useState(false);
+    const [transcriptGenerated, setTranscriptGenerated] = useState(false);
 
     const mediaRecorderRef = useRef(null);
     const streamRef = useRef(null);
@@ -217,12 +218,18 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
     };
 
     const handleGenerateTranscript = async () => {
+        if (transcriptGenerated) return; // already generated, no-op
         setIsTranscribing(true);
+        setTranscriptGenerated(false);
         try {
             const response = await api.post(`appointments/${appointmentId}/transcript`, {});
             console.log(response.data);
+            if (response.data?.success !== false) {
+                setTranscriptGenerated(true);
+            }
         } catch (error) {
             console.error("Error while generating transcript:", error);
+            setTranscriptGenerated(false);
         } finally {
             setIsTranscribing(false);
         }
@@ -335,9 +342,27 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
             </div>
 
             <div className="recording-footer-actions">
-                <button className="apmt-card-btn apmt-card-btn-outline" style={{ marginRight: 'auto' }} onClick={() => handleGenerateTranscript()}>
-                    <Sparkles size={16} />
-                    <span>{isTranscribing ? 'Generating...' : 'Generate Transcript'}</span>
+                <button
+                    className={`apmt-card-btn ${
+                        transcriptGenerated
+                            ? 'apmt-card-btn-generated'
+                            : 'apmt-card-btn-outline'
+                    }`}
+                    style={{ marginRight: 'auto' }}
+                    onClick={handleGenerateTranscript}
+                    disabled={isTranscribing || transcriptGenerated}
+                    title={transcriptGenerated ? 'Transcript has been generated' : 'Generate AI Transcript'}
+                >
+                    {isTranscribing ? (
+                        <Loader2 size={16} className="spin-icon" />
+                    ) : transcriptGenerated ? (
+                        <CheckCircle2 size={16} />
+                    ) : (
+                        <Sparkles size={16} />
+                    )}
+                    <span>
+                        {isTranscribing ? 'Generating...' : transcriptGenerated ? 'Generated' : 'Generate Transcript'}
+                    </span>
                 </button>
 
             </div>

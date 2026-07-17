@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getAppointmentById } from "../repositories/appointment.Repository.js";
 import { createAudioFileEntry, getAudioFilesByAppointmentId, getAudioFileById, deleteAudioFileEntry } from "../repositories/audioFile.Repository.js";
+import { getTranscriptByAudioFileId, deleteTranscriptByAudioFileId } from "../repositories/audioExtraction.Repository.js";
 import { getDoctorById } from "../repositories/doctor.Repository.js";
 import { getPatientById } from "../repositories/patient.Repository.js";
 import { generatePresignedUploadUrl, generatePresignedDownloadUrl, deleteFileFromS3 } from "../utils/s3.js";
@@ -115,14 +116,36 @@ export const deleteAppointmentAudioFileController = asyncHandler(async (req, res
         throw new ApiError(400, "audio file does not belong to this appointment");
     }
 
-    // 1. Delete file from AWS S3
+    // 1. Delete linked transcript from S3 and DB (if one exists)
+    const transcript = await getTranscriptByAudioFileId(audioId);
+    if (transcript) {
+        // Delete transcript object from S3
+        try {
+            await deleteFileFromS3(transcript.content);
+            console.log("Transcript deleted from S3:", transcript.content);
+        } catch (s3TranscriptError) {
+            console.error("Failed to delete transcript from S3, continuing:", s3TranscriptError);
+        }
+
+        // Delete transcript record from DB
+        try {
+            await deleteTranscriptByAudioFileId(audioId);
+            console.log("Transcript DB record deleted for audio_file_id:", audioId);
+        } catch (dbTranscriptError) {
+            console.error("Failed to delete transcript DB record, continuing:", dbTranscriptError);
+        }
+    } else {
+        console.log("No transcript found for audio_file_id:", audioId, "— skipping transcript cleanup");
+    }
+
+    // 2. Delete audio file from AWS S3
     try {
         await deleteFileFromS3(audioFile.file_url);
     } catch (s3Error) {
-        console.error("Failed to delete file from S3, continuing with DB deletion:", s3Error);
+        console.error("Failed to delete audio file from S3, continuing with DB deletion:", s3Error);
     }
 
-    // 2. Delete database entry
+    // 3. Delete audio file database entry
     await deleteAudioFileEntry(audioId);
 
     return res.status(200).json(
