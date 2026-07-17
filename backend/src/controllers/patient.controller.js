@@ -20,7 +20,7 @@ export const getAllPatientController = asyncHandler(async (req, res) => {
         );
     }
 
-    if ( pageSize < 1 || pageSize > 100 ) {
+    if (pageSize < 1 || pageSize > 100) {
         throw new ApiError(
             400,
             "Limit must be between 1 and 100"
@@ -44,17 +44,15 @@ export const getPatientKPIsController = asyncHandler(async (req, res) => {
 })
 
 export const getPatientController = asyncHandler(async (req, res) => {
-    const { patientId } = req.params; 
+    const { patientId } = req.params;
 
-    console.log(patientId)
     let result
     try {
         result = await getPatient(patientId);
-        console.log(result)
     } catch (error) {
         throw new ApiError(400, "error in getting patient data")
     }
-    const safeResult = {...result}
+    const safeResult = { ...result }
     delete safeResult.password_hash
     return res.status(200).json(new ApiResponse(200, safeResult, "patient data retrieved successfully"));
 })

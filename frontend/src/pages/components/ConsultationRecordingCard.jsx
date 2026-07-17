@@ -13,6 +13,7 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
     const [audioInstance, setAudioInstance] = useState(null);
     const [durations, setDurations] = useState({});
     const [activeDropdownId, setActiveDropdownId] = useState(null);
+    const [isTranscribing, setIsTranscribing] = useState(false);
 
     const mediaRecorderRef = useRef(null);
     const streamRef = useRef(null);
@@ -215,6 +216,18 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
         }
     };
 
+    const handleGenerateTranscript = async () => {
+        setIsTranscribing(true);
+        try {
+            const response = await api.post(`appointments/${appointmentId}/transcript`, {});
+            console.log(response.data);
+        } catch (error) {
+            console.error("Error while generating transcript:", error);
+        } finally {
+            setIsTranscribing(false);
+        }
+    }
+
     return (
         <div className="apmt-card">
             <div className="apmt-card-header">
@@ -322,14 +335,11 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
             </div>
 
             <div className="recording-footer-actions">
-                <button className="apmt-card-btn apmt-card-btn-outline" style={{ marginRight: 'auto' }}>
+                <button className="apmt-card-btn apmt-card-btn-outline" style={{ marginRight: 'auto' }} onClick={() => handleGenerateTranscript()}>
                     <Sparkles size={16} />
-                    <span>Generate Transcript</span>
+                    <span>{isTranscribing ? 'Generating...' : 'Generate Transcript'}</span>
                 </button>
-                <button className="apmt-card-btn apmt-card-btn-primary">
-                    <Send size={16} />
-                    <span>Submit Recording</span>
-                </button>
+
             </div>
         </div>
     );
