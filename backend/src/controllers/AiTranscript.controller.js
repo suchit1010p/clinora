@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getAppointmentById } from "../repositories/appointment.Repository.js";
-import { getAudioFilesByAppointmentId } from "../repositories/audioFile.Repository.js";
+import { getAudioFilesByAppointmentId, getTranscriptByAudioFileId } from "../repositories/audioFile.Repository.js";
 import s3 from "../db/aws.js";
 
 export const generateTranscriptController = asyncHandler(async (req, res) => {
@@ -33,7 +33,7 @@ export const generateTranscriptController = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Failed to generate transcript in generateTranscriptController ");
     }
 
-    return new ApiResponse(200, generateTranscript, "Transcript generated successfully");
+    return res.status(200).json(new ApiResponse(200, generateTranscript, "Transcript generated successfully"));
 
 });
 
@@ -55,6 +55,14 @@ const AiAudioFilesHandler = async (audioFiles) => {
     for (const audioFile of audioFiles) {
         console.log("Audio file : ", audioFile)
         console.log("---------------------------------------------------------")
+
+        // check if audio file already has transcript in the audio_extractions table 
+        const existingTranscript = await getTranscriptByAudioFileId(audioFile.id);
+        if (existingTranscript) {
+            console.log(`Audio file ${audioFile.file_url} already has transcript`);
+            continue;
+        }
+
 
         // download file from s3. 
         const key = audioFile.file_url;
@@ -221,7 +229,7 @@ const storeTranscript = async (audioFileTranscript, audioFile) => {
     try {
         const result = await sql`
             INSERT INTO audio_extractions(
-                content,
+                file_url,
                 appointment_id,
                 audio_file_id
             )

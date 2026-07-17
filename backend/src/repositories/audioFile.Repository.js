@@ -43,3 +43,13 @@ export async function deleteAudioFileEntry(id) {
 
     return result?.[0] ?? null;
 }
+
+export async function getTranscriptByAudioFileId(id) {
+    const result = await sql`
+        SELECT id
+        FROM audio_extractions
+        WHERE audio_file_id = ${id};
+    `;
+
+    return result?.[0] ?? null;
+}

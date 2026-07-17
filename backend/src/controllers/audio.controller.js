@@ -121,8 +121,8 @@ export const deleteAppointmentAudioFileController = asyncHandler(async (req, res
     if (transcript) {
         // Delete transcript object from S3
         try {
-            await deleteFileFromS3(transcript.content);
-            console.log("Transcript deleted from S3:", transcript.content);
+            await deleteFileFromS3(transcript.file_url);
+            console.log("Transcript deleted from S3:", transcript.file_url);
         } catch (s3TranscriptError) {
             console.error("Failed to delete transcript from S3, continuing:", s3TranscriptError);
         }

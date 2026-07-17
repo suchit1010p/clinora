@@ -54,7 +54,7 @@ created_at
 report_extractions
 ---------
 id (PK)
-content
+file_url
 appointment_id (FK -> appointments.id)
 report_id (FK -> reports.id)
 
@@ -70,7 +70,7 @@ created_at
 audio_extractions
 ---------
 id (PK)
-content
+file_url
 appointment_id (FK -> appointments.id)
 audio_file_id (FK -> audio_files.id)
 

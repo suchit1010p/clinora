@@ -6,7 +6,7 @@ import { sql } from "../db/db.js";
  */
 export async function getTranscriptByAudioFileId(audioFileId) {
     const result = await sql`
-        SELECT id, content, appointment_id, audio_file_id
+        SELECT id, file_url, appointment_id, audio_file_id
         FROM audio_extractions
         WHERE audio_file_id = ${audioFileId}
         LIMIT 1;
