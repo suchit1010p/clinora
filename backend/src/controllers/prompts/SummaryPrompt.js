@@ -1,4 +1,4 @@
-export const SUMMARY_PROMPT = `
+export const getSummaryPrompt = (transcript, reportText) => `
 You are an experienced medical assistant.
 
 You will receive:
@@ -37,4 +37,4 @@ ${transcript}
 Medical Reports:
 
 ${reportText}
-`
+`;

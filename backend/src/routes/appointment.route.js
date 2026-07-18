@@ -3,7 +3,7 @@ import { createAppointmentController, getAppointmentKPIsController, getAppointme
 import { getAppointmentAudioFilesController, uploadAudioFileToS3Controller, deleteAppointmentAudioFileController } from "../controllers/audio.controller.js";
 import { uploadReportToS3Controller, getAppointmentReportsController, deleteAppointmentReportController, triggerReportExtractionController } from "../controllers/report.controller.js";
 import { generateTranscriptController } from "../controllers/AiTranscript.controller.js";
-import { getAppointmentSummaryController } from "../controllers/AiSummaryGenerater.js";
+import { getAppointmentSummaryController, deleteAppointmentSummaryController } from "../controllers/AiSummaryGenerater.js";
 import { verifyDoctorJWT } from "../middlewares/auth.doctor.middleware.js";
 
 const router = Router();
@@ -28,5 +28,6 @@ router.get("/:appointmentId", verifyDoctorJWT, getAppointmentController)
 router.post("/:appointmentId/transcript", verifyDoctorJWT, generateTranscriptController);
 
 router.get("/:appointmentId/summary", verifyDoctorJWT, getAppointmentSummaryController)
+router.delete("/:appointmentId/summary", verifyDoctorJWT, deleteAppointmentSummaryController)
 
 export default router;
