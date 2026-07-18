@@ -192,6 +192,9 @@ const generateAiTranscript = async (audioFile) => {
             ]
         })
 
+        console.log("------------------------------------------------------")
+        console.log(response.usageMetadata);
+        console.log("------------------------------------------------------")
 
         return response.text
 

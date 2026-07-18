@@ -50,6 +50,10 @@ const extractTextFromReport = async (base64Pdf, mimeType) => {
         ],
     });
 
+    console.log("------------------------------------------------------")
+    console.log(response.usageMetadata)
+    console.log("------------------------------------------------------")
+
     return response.text;
 };
 
