@@ -52,11 +52,56 @@ export const getAppointmentSummaryController = asyncHandler(async (req, res) => 
         try {
             const summaryText = await fetchTextFromS3(existingSummary.summary);
             return res.status(200).json(
-                new ApiResponse(200, { summary: JSON.parse(summaryText) }, "Summary already exists")
+                new ApiResponse(200, { summary: JSON.parse(summaryText) }, "Summary retrieved successfully")
             );
         } catch (err) {
             console.error("[Summary] Failed to fetch existing summary from S3:", err.message);
-            // If the S3 file is missing, fall through and regenerate
+            // If the S3 file is missing, return 404 so it can be regenerated manually
+            throw new ApiError(404, "Summary file not found on storage");
+        }
+    }
+
+    throw new ApiError(404, "Summary not found for this appointment");
+});
+
+
+/**
+ * POST /:appointmentId/summary
+ *
+ * 1. Fetch all audio transcripts (audio_extractions) for the appointment from S3
+ * 2. Fetch all report extraction texts (report_extractions) for the appointment from S3
+ * 3. Call Gemini with the combined data + summary system prompt
+ * 4. Store the summary JSON to S3 and the file_url in ai_summaries table
+ * 5. Return the summary to the frontend
+ */
+export const generateAppointmentSummaryController = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.params;
+
+    if (!appointmentId) {
+        throw new ApiError(400, "appointmentId is required");
+    }
+
+    // Verify appointment exists and belongs to this doctor
+    const appointment = await getAppointmentById(appointmentId);
+    if (!appointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    if (appointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "You are not authorized to access this appointment");
+    }
+
+    // Check if a summary already exists — if so, fetch from S3 and return
+    const existingSummary = await getExistingSummary(appointmentId);
+    if (existingSummary) {
+        try {
+            const summaryText = await fetchTextFromS3(existingSummary.summary);
+            return res.status(200).json(
+                new ApiResponse(200, { summary: JSON.parse(summaryText) }, "Summary already exists")
+            );
+        } catch (err) {
+            console.error("[Summary] Failed to fetch existing summary from S3, regenerating:", err.message);
+            // If the S3 file is missing, fall through and generate
         }
     }
 
@@ -91,6 +136,8 @@ export const getAppointmentSummaryController = asyncHandler(async (req, res) => 
 
     await storeSummaryToS3(summaryKey, summaryData);
     console.log(`[Summary] Summary stored in S3: ${summaryKey}`);
+
+    console.log("summary data : \n", summaryData);
 
     // 6. Store S3 file_url in ai_summaries table
     // If an old (broken) row exists, delete it first

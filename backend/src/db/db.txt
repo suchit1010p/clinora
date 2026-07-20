@@ -81,6 +81,7 @@ id (PK)
 appointment_id (FK -> appointments.id)
 summary
 created_at
+followup_date
 
 
 refresh_tokens

@@ -40,7 +40,7 @@ const AiSummaryCard = ({ appointmentId }) => {
         setError(null);
 
         try {
-            const response = await api.get(`appointments/${appointmentId}/summary`);
+            const response = await api.post(`appointments/${appointmentId}/summary`);
             if (response.data?.success && response.data?.data?.summary) {
                 setSummaryData(response.data.data.summary);
             } else {
