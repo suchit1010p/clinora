@@ -41,8 +41,8 @@ export const Login = asyncHandler(async (req,res) => {
     
     const options = {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        secure: true,
     };
 
 
@@ -84,8 +84,8 @@ export const RegisterDoctor = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        secure: true,
     };
 
     return res.status(201)
@@ -129,8 +129,8 @@ export const RegisterPatient = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        secure: true,
     };
 
     return res.status(201)
@@ -244,8 +244,8 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: "None",
+        secure: true,
     };
 
     return res.status(200)
