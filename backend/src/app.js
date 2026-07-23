@@ -29,6 +29,12 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/patients", patientRouter)
 
+app.get("/health", (req, res) => {
+    res.status(200).json({
+        success: true
+    });
+});
+
 app.use((err, req, res, next) => {
     const statusCode = err?.statusCode || 500;
 
