@@ -9,7 +9,7 @@ import RegisterPage from './pages/RegisterPage'
 import MainLayout from './layouts/MainLayout'
 import ProtectedRoute from './routes/ProtectedRoute'
 import AppointmentPage from './pages/AppointmentPage'
-import PatientsPage from './pages/patientsPage'
+import PatientsPage from './pages/PatientsPage'
 import AppointmentBookingPage from './pages/AppointmentBookingPage'
 import ApmtUsagePage from './pages/ApmtUsagePage'
 
