@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginAuth } from "../features/auth/authSlice.js";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { LogIn } from "lucide-react";
 
 function LoginPage() {
 
@@ -41,9 +42,18 @@ function LoginPage() {
         setPassword("")
     };
 
+    const handleGuestLogin = () => {
+        const payload = {
+            email: "suchit1564@gmail.com",
+            password: "sa"
+        }
+        dispatch(loginAuth(payload))
+    };
+
     return (
         <div className="login-container">
-            <div className="login-card">
+            <div className="login-wrapper">
+                <div className="login-card">
                 <div className="header-text">
                     <h1>Welcome Back</h1>
                     <p>Login to continue to Clinora</p>
@@ -83,8 +93,19 @@ function LoginPage() {
                     Don't have an account? <a href="/register">Register</a>
                 </span>
             </div>
+
+            <button 
+                type="button" 
+                className="guest-login-btn" 
+                onClick={handleGuestLogin}
+                disabled={loading}
+            >
+                <LogIn size={18} />
+                {loading ? "Logging in..." : "Continue as Guest"}
+            </button>
         </div>
-    );
+    </div>
+);
 }
 
 export default LoginPage;

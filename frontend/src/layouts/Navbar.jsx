@@ -22,7 +22,7 @@ const Navbar = () => {
 
             <Link
                 className="nav-start"
-                to={user ? "/home" : "/login"}
+                to={user ? "/appointments" : "/login"}
             >
                 Let's start
                 <ArrowRight className="arrow" />
