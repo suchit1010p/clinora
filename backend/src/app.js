@@ -35,6 +35,13 @@ app.get("/health", (req, res) => {
     });
 });
 
+app.get("/test", (req, res) => {
+    console.log("call successfull at given timer....");
+    res.status(200).json({
+        success: true
+    })
+})
+
 app.use((err, req, res, next) => {
     const statusCode = err?.statusCode || 500;
 

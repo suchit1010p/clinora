@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Bell, Search, Plus, Eye, Pencil, Trash2, Users } from "lucide-react";
+import { Bell, Search, Plus, Eye, Trash2, Users } from "lucide-react";
 import { getPatients } from "../features/patients/patientSlice";
 import { getPatientKpi } from "../features/patients/patientKpiSlice";
 import "./styles/Patients.css";
 
 const PatientsPage = () => {
   const dispatch = useDispatch();
+  const [today] = useState(() => new Date());
   const { items: patients, loading: patientsLoading } = useSelector((state) => state.patients || {});
   const { items: patientKpi } = useSelector((state) => state.patientKpi || {});
 
@@ -25,6 +26,20 @@ const PatientsPage = () => {
   };
 
   const getInitial = (name = "") => name.charAt(0)?.toUpperCase() || "P";
+
+  const getAge = (dateOfBirth) => {
+    if (!dateOfBirth) return "-";
+
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age -= 1;
+    }
+
+    return `${age} Years`;
+  };
 
   return (
     <div className="patients-page">
@@ -79,56 +94,69 @@ const PatientsPage = () => {
           
         </div>
 
-        <table className="patients-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Patient</th>
-              <th>Age / Gender</th>
-              <th>Contact</th>
-              <th>Joined</th>
-              <th>Total Appointments</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {patientsLoading ? (
+        <div className="patients-table-wrap">
+          <table className="patients-table">
+            <thead>
               <tr>
-                <td colSpan="7" className="text-center">Loading patients...</td>
+                <th className="col-index">#</th>
+                <th>Patient</th>
+                <th>Age / Gender</th>
+                <th>Contact</th>
+                <th>Joined</th>
+                <th>Total Appointments</th>
+                <th className="col-actions">Actions</th>
               </tr>
-            ) : (
-              patients.map((patient, idx) => (
-                <tr key={patient.id}>
-                  <td>{idx + 1}</td>
-                  <td>
-                    <div className="patient-info">
-                      <div className="avatar">{getInitial(patient.name)}</div>
-                      <div>
-                        <div className="patient-name">{patient.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <p>{Math.floor((Date.now() - new Date(patient.date_of_birth)) / (1000 * 60 * 60 * 24 * 365))} Years</p>
-                    <p className="muted">{patient.sex}</p>
-                    </td>
-                  <td>
-                    <div>{patient.mobile}</div>
-                    <div className="muted">{patient.email}</div>
-                  </td>
-                  <td>{formatDate(patient.created_at)}</td>
-                  <td>{patient.appointment_count}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button className="action-btn view"><Eye size={16} /></button>
-                      <button className="action-btn delete"><Trash2 size={16} /></button>
-                    </div>
-                  </td>
+            </thead>
+            <tbody>
+              {patientsLoading ? (
+                <tr>
+                  <td colSpan="7" className="text-center">Loading patients...</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : patients.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="text-center">No patients found.</td>
+                </tr>
+              ) : (
+                patients.map((patient, idx) => (
+                  <tr key={patient.id}>
+                    <td className="col-index">{idx + 1}</td>
+                    <td>
+                      <div className="patient-info">
+                        <div className="avatar">{getInitial(patient.name)}</div>
+                        <div>
+                          <div className="patient-name">{patient.name}</div>
+                          <div className="patient-id">ID #{patient.id}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <p>{getAge(patient.date_of_birth)}</p>
+                      <p className="muted">{patient.sex}</p>
+                    </td>
+                    <td>
+                      <div>{patient.mobile || "-"}</div>
+                      <div className="muted">{patient.email || "-"}</div>
+                    </td>
+                    <td>{formatDate(patient.created_at)}</td>
+                    <td>
+                      <span className="appointment-count">{patient.appointment_count ?? 0}</span>
+                    </td>
+                    <td className="col-actions">
+                      <div className="action-buttons">
+                        <button className="action-btn view" type="button" aria-label={`View ${patient.name}`}>
+                          <Eye size={16} />
+                        </button>
+                        <button className="action-btn delete" type="button" aria-label={`Delete ${patient.name}`}>
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
         <div className="table-footer">Showing {patients.length} patients</div>
       </div>

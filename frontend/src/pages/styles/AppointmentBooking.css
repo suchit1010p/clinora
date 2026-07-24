@@ -1,173 +1,174 @@
-/* ===========================
-   Booking Page
-=========================== */
+/* Appointment Booking Page Stylesheet */
+
+:root {
+  --booking-accent: #2563eb;
+  --booking-accent-hover: #1d4ed8;
+  --booking-bg-soft: #eff6ff;
+  --booking-text: #1e293b;
+  --booking-text-muted: #64748b;
+  --booking-text-dark: #0f172a;
+  --booking-border: #eaedf2;
+  --booking-shadow: 0 4px 12px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.03);
+}
 
 .booking-page {
   max-width: 980px;
-  margin: 40px auto;
-  padding: 0 20px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--booking-text);
 }
 
-/* ===========================
-   Header
-=========================== */
-
+/* ================= Header ================= */
 .booking-top {
   display: flex;
   align-items: center;
-  gap: 18px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.booking-top h1 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.booking-top p {
-  margin-top: 4px;
-  color: #6b7280;
-  font-size: 0.95rem;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .back-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  padding: 0 14px;
-  min-width: 120px;
-  height: 46px;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  background: white;
-  color: #111827;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--booking-accent);
   cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: .25s;
+  font-size: 15px;
+  font-weight: 500;
+  transition: transform 0.2s, color 0.2s;
 }
 
 .back-btn:hover {
-  background: #f3f4f6;
+  color: var(--booking-accent-hover);
+  transform: translateX(-4px);
 }
 
-.back-btn::before {
-  content: '←';
-  display: inline-block;
-  font-size: 1rem;
-  margin-right: 6px;
+.back-btn:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.16);
+  outline-offset: 4px;
+  border-radius: 8px;
 }
 
-/* ===========================
-   Progress Bar
-=========================== */
+.booking-page-title {
+  margin: 0;
+  color: var(--booking-text-dark);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
 
+.booking-header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 150px;
+}
+
+.booking-id-badge {
+  color: var(--booking-accent);
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ================= Progress ================= */
 .booking-progress {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 45px;
+  margin-bottom: 28px;
 }
 
 .progress-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  min-width: 96px;
 }
 
 .progress-step span {
-  font-size: .9rem;
-  color: #9ca3af;
+  color: var(--booking-text-muted);
+  font-size: 13px;
   font-weight: 500;
 }
 
 .progress-step.active span {
-  color: #2563eb;
+  color: var(--booking-accent);
 }
 
 .circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #e5e7eb;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: #6b7280;
-  transition: .3s;
+  border: 1px solid #dbe3ee;
+  border-radius: 50%;
+  background: #f8fafc;
+  color: var(--booking-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
 .progress-step.active .circle {
-  background: #2563eb;
-  color: white;
-  box-shadow: 0 8px 20px rgba(37,99,235,.25);
+  border-color: var(--booking-accent);
+  background: var(--booking-bg-soft);
+  color: var(--booking-accent);
 }
 
 .progress-line {
-  width: 180px;
-  height: 4px;
-  background: #e5e7eb;
-  margin: 0 12px;
-  border-radius: 50px;
-  transition: .35s;
+  width: 140px;
+  height: 1px;
+  margin: 0 8px 24px;
+  background: #dbe3ee;
+  transition: background 0.2s;
 }
 
 .progress-line.active {
-  background: #2563eb;
+  background: var(--booking-accent);
 }
 
-/* ===========================
-   Step Title
-=========================== */
-
+/* ================= Step Title ================= */
 .step-title {
-  margin-bottom: 28px;
+  margin-bottom: 18px;
 }
 
 .step-title span {
-  display: inline-block;
-  color: #2563eb;
-  background: rgba(37,99,235,.08);
-  padding: 6px 14px;
-  border-radius: 30px;
-  font-size: .8rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--booking-accent);
+  font-size: 13px;
   font-weight: 600;
 }
 
 .step-title h2 {
-  margin-top: 14px;
-  font-size: 1.7rem;
-  color: #111827;
+  margin: 8px 0 0;
+  color: var(--booking-text-dark);
+  font-size: 20px;
+  font-weight: 600;
 }
 
-/* ===========================
-   Card
-=========================== */
-
+/* ================= Card ================= */
 .booking-card {
-  background: white;
-  border-radius: 22px;
-  padding: 38px;
-  box-shadow:
-      0 15px 40px rgba(15,23,42,.08);
-  border: 1px solid #edf0f5;
+  padding: 24px;
+  border: 1px solid var(--booking-border);
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: var(--booking-shadow);
 }
 
-/* ===========================
-   Alerts
-=========================== */
-
+/* ================= Alerts ================= */
 .booking-alert {
-  padding: 15px 18px;
+  padding: 14px 16px;
   border-radius: 12px;
-  margin-bottom: 22px;
-  font-size: .95rem;
+  margin-bottom: 16px;
+  font-size: 14px;
 }
 
 .booking-alert.error {
@@ -182,19 +183,17 @@
   border: 1px solid #bbf7d0;
 }
 
-/* ===========================
-   Form Grid
-=========================== */
-
+/* ================= Form ================= */
 .input-grid {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 22px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .input-box {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 
 .input-box.full {
@@ -202,176 +201,177 @@
 }
 
 .input-box label {
-  margin-bottom: 8px;
-  color: #374151;
-  font-size: .92rem;
+  color: var(--booking-text-dark);
+  font-size: 13px;
   font-weight: 600;
 }
 
 .input-box input,
 .input-box select {
-  height: 52px;
-  padding: 0 16px;
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
   outline: none;
-  font-size: .95rem;
-  transition: .25s;
-  background: white;
+  background: #ffffff;
+  color: var(--booking-text);
+  font: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .input-box input:focus,
 .input-box select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37,99,235,.10);
+  border-color: var(--booking-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
-/* ===========================
-   Summary
-=========================== */
-
+/* ================= Summary ================= */
 .summary-card {
+  padding: 20px;
+  margin-bottom: 24px;
+  border: 1px solid var(--booking-border);
+  border-radius: 12px;
   background: #f8fafc;
-  border-radius: 18px;
-  padding: 24px;
-  margin-bottom: 30px;
 }
 
 .summary-card h3 {
-  margin-bottom: 22px;
-  color: #111827;
+  margin: 0 0 16px;
+  color: var(--booking-text-dark);
+  font-size: 17px;
+  font-weight: 600;
 }
 
 .summary-grid {
   display: grid;
-  grid-template-columns: repeat(2,1fr);
-  gap: 18px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
 }
 
 .summary-grid div {
-  background: white;
-  border-radius: 14px;
-  padding: 18px;
-  border: 1px solid #e5e7eb;
+  padding: 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
 }
 
 .summary-grid small {
   display: block;
-  color: #6b7280;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  color: var(--booking-text-muted);
+  font-size: 12px;
 }
 
 .summary-grid p {
   margin: 0;
-  color: #111827;
-  font-weight: 600;
+  color: var(--booking-text-dark);
+  font-size: 14px;
+  font-weight: 500;
 }
-
-/* ===========================
-   Appointment Input
-=========================== */
 
 .appointment-box {
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
-.appointment-box input {
-  width: 100%;
-}
-
-/* ===========================
-   Buttons
-=========================== */
-
+/* ================= Buttons ================= */
 .footer-buttons {
-  margin-top: 20px;
   display: flex;
   justify-content: space-between;
-  gap: 15px;
+  gap: 12px;
+  margin-top: 24px;
 }
 
 .primary-button,
 .secondary-button {
-  height: 50px;
-  padding: 0 26px;
-  border-radius: 14px;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: .95rem;
-  font-weight: 600;
-  transition: .25s;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
 }
 
 .primary-button {
-  background: #2563eb;
-  color: white;
+  border: none;
+  background: var(--booking-accent);
+  color: #ffffff;
 }
 
 .primary-button:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
+  background: var(--booking-accent-hover);
 }
 
 .secondary-button {
-  background: #f3f4f6;
-  color: #374151;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: var(--booking-text);
 }
 
 .secondary-button:hover {
-  background: #e5e7eb;
+  border-color: #94a3b8;
+  background: #f8fafc;
 }
 
 .primary-button:disabled,
 .secondary-button:disabled {
-  opacity: .6;
+  opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* ===========================
-   Responsive
-=========================== */
-
-@media (max-width:768px) {
-
+/* ================= Responsive ================= */
+@media (max-width: 768px) {
   .booking-page {
-    padding: 20px 16px;
+    padding: 16px;
   }
 
   .booking-top {
-    justify-content: space-between;
-    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .back-btn {
+    justify-content: center;
+  }
+
+  .booking-page-title {
+    font-size: 20px;
+  }
+
+  .booking-header-right {
+    justify-content: center;
+    min-width: 0;
   }
 
   .booking-progress {
-    overflow-x: auto;
     justify-content: flex-start;
-    padding-bottom: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
   }
 
   .progress-step {
-    min-width: 110px;
+    min-width: 92px;
   }
 
   .progress-line {
-    width: 60px;
+    width: 56px;
   }
 
   .booking-card {
-    padding: 22px;
+    padding: 16px;
   }
 
   .input-grid,
   .summary-grid {
     grid-template-columns: 1fr;
-  }
-
-  .booking-top h1 {
-    font-size: 1.6rem;
-  }
-
-  .step-title h2 {
-    font-size: 1.4rem;
   }
 
   .footer-buttons {

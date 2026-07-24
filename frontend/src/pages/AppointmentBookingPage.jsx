@@ -1,6 +1,7 @@
-﻿import React, { useState } from 'react'
+﻿import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
 import api from '../services/api.js'
 import { createAppointment } from '../features/appointments/appointmentsSlice.js'
 import './styles/AppointmentBooking.css'
@@ -131,20 +132,23 @@ const AppointmentBookingPage = () => {
             {/* Header */}
 
             <div className="booking-top">
-
                 <button
                     className="back-btn"
                     onClick={() => navigate("/appointments")}
                     type="button"
+                    aria-label="Back to appointments"
                 >
-                    Back
+                    <ArrowLeft size={18} />
+                    <span>Back to Appointments</span>
                 </button>
 
-                <div>
-                    <h1>Book Appointment</h1>
-                    <p>Create a new patient appointment</p>
-                </div>
+                <h1 className="booking-page-title">
+                    Book Appointment
+                </h1>
 
+                <div className="booking-header-right">
+                    <span className="booking-id-badge">New Appointment</span>
+                </div>
             </div>
 
 
@@ -226,6 +230,7 @@ const AppointmentBookingPage = () => {
                                     name="name"
                                     value={patientForm.name}
                                     onChange={handleChange}
+                                    placeholder='Suchit'
                                 />
                             </div>
 
@@ -236,6 +241,7 @@ const AppointmentBookingPage = () => {
                                     name="email"
                                     value={patientForm.email}
                                     onChange={handleChange}
+                                    placeholder='example@gmail.com'
                                 />
                             </div>
 
@@ -245,6 +251,7 @@ const AppointmentBookingPage = () => {
                                     name="mobile"
                                     value={patientForm.mobile}
                                     onChange={handleChange}
+                                    placeholder='9876543219'
                                 />
                             </div>
 

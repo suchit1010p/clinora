@@ -152,10 +152,18 @@
 }
 
 
+.patients-table-wrap {
+    margin-top: 8px;
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px
+}
+
 .patients-table {
     width: 100%;
+    min-width: 860px;
     border-collapse: collapse;
-    margin-top: 8px
+    table-layout: fixed
 }
 
 .patients-table thead {
@@ -163,44 +171,72 @@
 }
 
 .patients-table th {
-    padding: 14px;
-    text-align: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
     color: #64748b;
-    font-weight: 700
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    white-space: nowrap
 }
 
 .patients-table td {
-    padding: 14px;
+    padding: 15px 16px;
     border-bottom: 1px solid #edf2f7;
     vertical-align: middle;
-    text-align: center
+    text-align: left;
+    color: #1e293b;
+    font-size: 14px
+}
+
+.patients-table tbody tr:last-child td {
+    border-bottom: none
 }
 
 .patients-table tbody tr:hover {
-    background: #f9fbff
+    background: #f8fafc
+}
+
+.patients-table .col-index {
+    width: 58px;
+    color: #94a3b8
+}
+
+.patients-table .col-actions {
+    width: 110px;
+    text-align: right
 }
 
 .patient-info {
     display: flex;
     gap: 12px;
     align-items: center;
-    justify-content: center
+    justify-content: flex-start;
+    min-width: 0
 }
 
 .avatar {
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 auto;
     border-radius: 50%;
     background: #eef2ff;
     color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 14px;
     font-weight: 700
 }
 
 .patient-name {
-    font-weight: 600
+    color: #0f172a;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
 }
 
 .patient-id {
@@ -210,7 +246,25 @@
 
 .muted {
     color: #6b7280;
-    font-size: 13px
+    font-size: 13px;
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap
+}
+
+.appointment-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 13px;
+    font-weight: 700
 }
 
 .pill {
@@ -232,38 +286,39 @@
 .action-buttons {
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center
 }
 
 .action-btn {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     border-radius: 8px;
-    border: none;
+    border: 1px solid transparent;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer
+    cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s
 }
 
 .action-btn.view {
-    background: #eef5ff;
     color: #2563eb
 }
 
-.action-btn.edit {
-    background: #fff7e8;
-    color: #f59e0b
+.action-btn.view:hover {
+    background: #eff6ff;
+    border-color: #bfdbfe
 }
 
 .action-btn.delete {
-    background: #ffecec;
     color: #ef4444
 }
 
-.action-btn:hover {
-    opacity: .95
+.action-btn.delete:hover {
+    background: #fef2f2;
+    border-color: #fecaca
 }
 
 .table-footer {
@@ -286,8 +341,7 @@
         justify-content: flex-end
     }
 
-    .patients-table {
-        display: block;
-        overflow-x: auto
+    .patients-table-wrap {
+        border-radius: 10px
     }
 }
