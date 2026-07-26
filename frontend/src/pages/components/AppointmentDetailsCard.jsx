@@ -1,7 +1,49 @@
-import React from 'react';
-import { Edit, User, Calendar, Clock, AlertCircle, FileText } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Edit, User, Calendar, Clock, AlertCircle, FileText, Loader2, Check, RefreshCw } from 'lucide-react';
+import api from '../../services/api.js';
 
 const AppointmentDetailsCard = ({ appointment, user }) => {
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [error, setError] = useState(null);
+
+    const handleGenerateFollowups = async () => {
+        if (!appointment?.id) return;
+        setLoading(true);
+        setError(null);
+        try {
+            await api.post(`followup/${appointment.id}/generate-followups`);
+            setSuccess(true);
+        } catch (err) {
+            console.error(err);
+            setError(err.response?.data?.message || 'Failed to generate follow-ups. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
+        let isMounted = true;
+        const checkFollowUpsStatus = async () => {
+            if (!appointment?.id) return;
+            setError(null);
+            try {
+                const response = await api.get(`followup/${appointment.id}/check-followups`);
+                if (isMounted && response.data?.data && response.data.data.length > 0) {
+                    setSuccess(true);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        setSuccess(false);
+        checkFollowUpsStatus();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [appointment?.id]);
+
     return (
         <div className="apmt-card">
             <div className="apmt-card-header">
@@ -51,6 +93,37 @@ const AppointmentDetailsCard = ({ appointment, user }) => {
                     </span>
                     <span className="detail-value">{appointment?.reason || 'No reason provided'}</span>
                 </div>
+            </div>
+
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button
+                    onClick={handleGenerateFollowups}
+                    disabled={loading || success}
+                    className={`apmt-card-btn ${success ? 'apmt-card-btn-generated' : 'apmt-card-btn-primary'}`}
+                    style={{ width: '100%', justifyContent: 'center' }}
+                >
+                    {loading ? (
+                        <>
+                            <Loader2 className="spin-icon" size={16} />
+                            Generating Follow-ups...
+                        </>
+                    ) : success ? (
+                        <>
+                            <Check size={16} />
+                            Follow-ups Generated
+                        </>
+                    ) : (
+                        <>
+                            <RefreshCw size={16} />
+                            Generate Follow-ups
+                        </>
+                    )}
+                </button>
+                {error && (
+                    <span style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', textAlign: 'center' }}>
+                        {error}
+                    </span>
+                )}
             </div>
         </div>
     );

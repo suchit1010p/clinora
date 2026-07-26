@@ -118,3 +118,63 @@ started_at
 ended_at
 
 */
+
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
+import { getAppointmentById } from "../repositories/appointment.Repository.js";
+import { createFollowUpRepository, getFollowUpsByAppointmentId } from "../repositories/followup.Repository.js";
+
+export const generateFollowUps = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.params;
+
+    const checkAppointment = await getAppointmentById(appointmentId);
+    if (!checkAppointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    if (checkAppointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "You are not authorized to access this appointment");
+    }
+
+    // Create follow-up schedule
+
+    for (let i = 0; i < 3; i++) {
+        const day = 2 * (i + 1);
+        const scheduledAt = new Date();
+        scheduledAt.setDate(scheduledAt.getDate() + day); // output will be in "2026-07-28T12:27:17.493Z"
+        console.log(scheduledAt);
+        await createFollowUpRepository(appointmentId, checkAppointment.patient_id, i + 1, scheduledAt);
+    }
+
+    return res.status(200).json(new ApiResponse(200, {}, "Follow-ups created successfully"));
+})
+
+export const checkFollowUps = asyncHandler(async (req, res) => {
+    const { appointmentId } = req.params;
+
+    const checkAppointment = await getAppointmentById(appointmentId);
+    if (!checkAppointment) {
+        throw new ApiError(404, "Appointment not found");
+    }
+
+    if (checkAppointment.doctor_id !== req.doctor.id) {
+        throw new ApiError(403, "You are not authorized to access this appointment");
+    }
+
+    const followUps = await getFollowUpsByAppointmentId(appointmentId);
+    if (!followUps) {
+        throw new ApiError(404, "Follow-ups not found");
+    }
+
+    return res.status(200).json(new ApiResponse(200, followUps, "Follow-ups fetched successfully"));
+})
+
+
+const startFollowUpAgent = async () => {
+    /*
+    1. get appointments from db whose started_at <= Date.now()
+    2. for each appointment form data array.
+    3. call ai for each
+    */
+}

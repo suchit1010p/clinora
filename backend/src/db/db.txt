@@ -20,6 +20,8 @@ mobile (UNIQUE)
 email (UNIQUE)
 password_hash
 created_at
+blood_group
+telegram_chat_id (bigint)
 
 
 appointments
@@ -99,6 +101,19 @@ Constraint:
 Exactly one of:
 patient_id OR doctor_id
 must be present
+
+
+followup_jobs
+---------
+id (PK)
+appointment_id (FK -> appointments.id)
+patient_id (FK -> patients.id)
+attempt (int)
+status (enum -> pending, active, completed)
+file_url (text)
+started_at (timestamp)
+ended_at (timestamp)
+scheduled_at (date)
 
 
 

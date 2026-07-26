@@ -6,8 +6,8 @@ import cookieParser from "cookie-parser"
 
 const app = express();
 
-const allowedOrigin = process.env.CORS_ORIGIN 
-    ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim()) 
+const allowedOrigin = process.env.CORS_ORIGIN
+    ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
     : true;
 
 app.use(cors({
@@ -24,10 +24,12 @@ app.use(cookieParser());
 import authRouter from "./routes/auth.routes.js";
 import appointmentRouter from "./routes/appointment.route.js";
 import patientRouter from "./routes/patient.route.js";
+import followUpRouter from "./routes/followup.route.js";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/appointments", appointmentRouter);
 app.use("/api/v1/patients", patientRouter)
+app.use("/api/v1/followup", followUpRouter)
 
 app.get("/health", (req, res) => {
     res.status(200).json({
