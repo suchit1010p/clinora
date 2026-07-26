@@ -88,8 +88,8 @@ const AppointmentPage = () => {
     }, [dispatch, appointments]);
 
     useEffect(() => {
-        dispatch(getAppointments({ 
-            page, 
+        dispatch(getAppointments({
+            page,
             limit,
             search: debouncedSearch,
             status: selectedStatus === "All Status" ? "" : selectedStatus,
@@ -102,8 +102,8 @@ const AppointmentPage = () => {
     const renderStatuscard = (appointmentId) => (
         <div className="status-card">
             {STATUS.map((item, index) => (
-                <button 
-                    key={index} 
+                <button
+                    key={index}
                     className={`status-btn-${item}`}
                     onClick={() => handleUpdateStatus(appointmentId, item)}
                 >
@@ -187,7 +187,7 @@ const AppointmentPage = () => {
                     </div>
 
                     <div className="card-content">
-                        <span>Upcoming</span>
+                        <span>Pending</span>
                         <h2>{kpiData?.upcoming_appointments || 21}</h2>
                         <small>Next 7 Days</small>
                     </div>
@@ -237,8 +237,8 @@ const AppointmentPage = () => {
                 <div className="filters">
 
                     <div className="custom-filter-dropdown">
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="dropdown-trigger-btn"
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -267,17 +267,17 @@ const AppointmentPage = () => {
                         )}
                     </div>
 
-                    <input 
-                        type="date" 
-                        value={startDate} 
-                        onChange={(e) => setStartDate(e.target.value)} 
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
                         placeholder="Start Date"
                     />
 
-                    <input 
-                        type="date" 
-                        value={endDate} 
-                        onChange={(e) => setEndDate(e.target.value)} 
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                         placeholder="End Date"
                     />
 
