@@ -302,7 +302,8 @@ const AppointmentPage = () => {
                     <tbody>
 
                         {appointments?.map((appointment, index) => (
-                            <tr key={appointment.id}>
+                            <tr key={appointment.id} onClick={() => navigate(`/appointments/${appointment.id}`)} style={{ cursor: "pointer" }} >
+                            
                                 <td data-label="#">{index + 1}</td>
                                 <td data-label="Patient">{appointment.patient_name}</td>
 
@@ -318,7 +319,7 @@ const AppointmentPage = () => {
                                 <td data-label="Status">
                                     <span className={`status ${appointment.status.toLowerCase()}`}>{appointment.status}</span>
                                 </td>
-                                <td data-label="Actions">
+                                <td data-label="Actions" onClick={(e) => e.stopPropagation()}>
                                     <div className="action-buttons">
 
                                         <button className="action-btn edit" onClick={() => (
