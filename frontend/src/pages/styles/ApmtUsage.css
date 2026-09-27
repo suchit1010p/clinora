@@ -113,7 +113,13 @@
 }
 
 .mobile-only {
-    display: none;
+    display: none !important;
+}
+
+@media (min-width: 769px) {
+    .mobile-only {
+        display: none !important;
+    }
 }
 
 .apmt-more-btn {
@@ -1124,9 +1130,7 @@
 
 /* Medical Reports Card */
 .mobile-reports-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: none;
 }
 
 .mobile-report-card {
@@ -1230,6 +1234,12 @@
 
     .mobile-only {
         display: block !important;
+    }
+
+    .mobile-reports-container {
+        display: flex !important;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .apmt-container {

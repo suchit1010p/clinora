@@ -368,12 +368,20 @@ tbody tr:hover {
   border: 1px solid #fecaca;
 }
 
+th.col-actions,
+td.col-actions {
+  text-align: right;
+  width: 160px;
+  min-width: 160px;
+}
+
 /* Action Buttons */
 .action-buttons {
   position: relative;
   display: flex;
   gap: 8px;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .action-btn {

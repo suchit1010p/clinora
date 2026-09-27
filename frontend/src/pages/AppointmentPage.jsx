@@ -302,7 +302,7 @@ const AppointmentPage = () => {
                             <th>Contact</th>
                             <th>Scheduled_at</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th className="col-actions">Actions</th>
                         </tr>
                     </thead>
 
@@ -331,7 +331,7 @@ const AppointmentPage = () => {
                                     <td data-label="Status">
                                         <span className={`status ${appointment.status.toLowerCase()}`}>{appointment.status}</span>
                                     </td>
-                                    <td data-label="Actions" onClick={(e) => e.stopPropagation()}>
+                                    <td className="col-actions" data-label="Actions" onClick={(e) => e.stopPropagation()}>
                                         <div className="action-buttons">
                                             <button className="action-btn edit" onClick={() => (
                                                 setStatusMenu(prev => prev === appointment.id ? null : appointment.id)
