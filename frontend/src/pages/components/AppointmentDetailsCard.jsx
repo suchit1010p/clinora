@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Edit, User, Calendar, Clock, AlertCircle, FileText, Loader2, Check, RefreshCw } from 'lucide-react';
+import { User, Calendar, Clock, AlertCircle, FileText, Loader2, Check, RefreshCw } from 'lucide-react';
 import api from '../../services/api.js';
 
 const AppointmentDetailsCard = ({ appointment, user }) => {
@@ -21,6 +21,7 @@ const AppointmentDetailsCard = ({ appointment, user }) => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
         let isMounted = true;
         const checkFollowUpsStatus = async () => {
@@ -44,63 +45,85 @@ const AppointmentDetailsCard = ({ appointment, user }) => {
         };
     }, [appointment?.id]);
 
+    const currentStatus = appointment?.status || 'Pending';
+
     return (
-        <div className="apmt-card">
+        <div className="apmt-card appointment-details-card">
             <div className="apmt-card-header">
                 <h2 className="apmt-card-title">Appointment Details</h2>
             </div>
 
-            <div className="patient-details-list" style={{ marginBottom: 0 }}>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <User size={16} />
+            {/* Compact 2-column or list info layout */}
+            <div className="apmt-details-grid">
+                <div className="apmt-grid-item">
+                    <span className="apmt-grid-label">
+                        <User size={14} className="apmt-icon" />
                         Doctor
                     </span>
-                    <span className="detail-value">{user?.name ? `Dr. ${user.name}` : (appointment?.doctor || 'TBD')}</span>
+                    <span className="apmt-grid-value">
+                        {user?.name ? `Dr. ${user.name}` : (appointment?.doctor || 'TBD')}
+                    </span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <Calendar size={16} />
+
+                <div className="apmt-grid-item">
+                    <span className="apmt-grid-label">
+                        <Calendar size={14} className="apmt-icon" />
                         Date
                     </span>
-                    <span className="detail-value">{appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleDateString() : 'N/A'}</span>
+                    <span className="apmt-grid-value">
+                        {appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleDateString() : 'N/A'}
+                    </span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <Clock size={16} />
+
+                <div className="apmt-grid-item">
+                    <span className="apmt-grid-label">
+                        <Clock size={14} className="apmt-icon" />
                         Time
                     </span>
-                    <span className="detail-value">{appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                    <span className="apmt-grid-value">
+                        {appointment?.scheduled_at ? new Date(appointment.scheduled_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                    </span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <AlertCircle size={16} />
+
+                <div className="apmt-grid-item">
+                    <span className="apmt-grid-label">
+                        <AlertCircle size={14} className="apmt-icon" />
                         Status
                     </span>
-                    <span className="status-badge">{appointment?.status || 'Pending'}</span>
+                    <span className="apmt-grid-value">
+                        <span className={`status-pill ${currentStatus.toLowerCase()}`}>
+                            {currentStatus}
+                        </span>
+                    </span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <FileText size={16} />
+
+                <div className="apmt-grid-item">
+                    <span className="apmt-grid-label">
+                        <FileText size={14} className="apmt-icon" />
                         Visit Type
                     </span>
-                    <span className="detail-value">{appointment?.visitType || 'Consultation'}</span>
+                    <span className="apmt-grid-value">
+                        {appointment?.visitType || 'Consultation'}
+                    </span>
                 </div>
-                <div className="detail-row">
-                    <span className="detail-label">
-                        <FileText size={16} />
+
+                <div className="apmt-grid-item apmt-grid-item--full">
+                    <span className="apmt-grid-label">
+                        <FileText size={14} className="apmt-icon" />
                         Reason
                     </span>
-                    <span className="detail-value">{appointment?.reason || 'No reason provided'}</span>
+                    <span className="apmt-grid-value">
+                        {appointment?.reason || 'No reason provided'}
+                    </span>
                 </div>
             </div>
 
-            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {/* Follow-ups action */}
+            <div className="apmt-followups-action">
                 <button
                     onClick={handleGenerateFollowups}
                     disabled={loading || success}
                     className={`apmt-card-btn ${success ? 'apmt-card-btn-generated' : 'apmt-card-btn-primary'}`}
-                    style={{ width: '100%', justifyContent: 'center' }}
                 >
                     {loading ? (
                         <>
@@ -120,7 +143,7 @@ const AppointmentDetailsCard = ({ appointment, user }) => {
                     )}
                 </button>
                 {error && (
-                    <span style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px', textAlign: 'center' }}>
+                    <span className="apmt-followup-error">
                         {error}
                     </span>
                 )}

@@ -46,17 +46,23 @@ const ApmtUsagePage = () => {
         };
     }, [dispatch, appointmentId])
 
+    const currentStatus = appointment?.status || 'Pending';
+
     return (
         <div className="apmt-container">
-            {/* Header */}
-            <div className="apmt-header">
-                <Link to="/appointments" className="apmt-back-link">
-                    <ArrowLeft size={18} />
-                    <span>Back to Appointments</span>
-                </Link>
-                <h1 className="apmt-page-title">Appointment Details</h1>
-                <div className="apmt-header-right">
-                    <span className="apmt-id-badge">Appointment #{appointmentId || '1023'}</span>
+            {/* Desktop Top Nav */}
+
+
+            {/* Page Header (Matches Section 2 Specification) */}
+            <div className="apmt-page-header">
+                <div className="apmt-header-title-block">
+                    <h1 className="apmt-page-title">Appointment Details</h1>
+                    <span className="apmt-id-sub">Appointment #{appointment?.id || appointmentId}</span>
+                </div>
+                <div className="apmt-header-status-block">
+                    <span className={`status-pill ${currentStatus.toLowerCase()}`}>
+                        {currentStatus}
+                    </span>
                 </div>
             </div>
 
@@ -68,12 +74,12 @@ const ApmtUsagePage = () => {
                     <AppointmentDetailsCard appointment={appointment} user={user} />
                 </div>
 
-                {/* Right Column - Recording, Medical Reports, AI Summary, Diagnosis */}
+                {/* Right Column - Recording, Medical Reports, AI Summary */}
                 <div className="apmt-right-col">
                     <ConsultationRecordingCard appointmentId={appointmentId} />
                     <MedicalReportsCard appointmentId={appointmentId} />
 
-                    {/* AI Generated Summary + Diagnosis (auto-populated) */}
+                    {/* AI Generated Summary + Diagnosis (Preserved) */}
                     <AiSummaryCard appointmentId={appointmentId} />
                 </div>
             </div>
@@ -82,4 +88,3 @@ const ApmtUsagePage = () => {
 }
 
 export default ApmtUsagePage;
-

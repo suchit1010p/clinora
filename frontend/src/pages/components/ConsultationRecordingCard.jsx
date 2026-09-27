@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, Play, Pause, MoreVertical, Sparkles, Send, Trash2, FileText, CheckCircle2, Loader2 } from 'lucide-react';
+import { Mic, Play, Pause, Trash2, FileText, CheckCircle2, Loader2, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import api from '../../services/api.js';
 
@@ -12,7 +12,6 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
     const [playingId, setPlayingId] = useState(null);
     const [audioInstance, setAudioInstance] = useState(null);
     const [durations, setDurations] = useState({});
-    const [activeDropdownId, setActiveDropdownId] = useState(null);
     const [isTranscribing, setIsTranscribing] = useState(false);
     const [transcriptGenerated, setTranscriptGenerated] = useState(false);
 
@@ -84,8 +83,6 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
         } catch (err) {
             console.error("Error deleting audio recording:", err);
             alert("Failed to delete recording. Please try again.");
-        } finally {
-            setActiveDropdownId(null);
         }
     };
 
@@ -218,12 +215,11 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
     };
 
     const handleGenerateTranscript = async () => {
-        if (transcriptGenerated) return; // already generated, no-op
+        if (transcriptGenerated) return;
         setIsTranscribing(true);
         setTranscriptGenerated(false);
         try {
             const response = await api.post(`appointments/${appointmentId}/transcript`, {});
-            console.log(response.data);
             if (response.data?.success !== false) {
                 setTranscriptGenerated(true);
             }
@@ -233,27 +229,32 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
         } finally {
             setIsTranscribing(false);
         }
-    }
+    };
 
     return (
-        <div className="apmt-card">
+        <div className="apmt-card consultation-recording-card">
+            {/* Header: Title + Microphone Button */}
             <div className="apmt-card-header">
                 <h2 className="apmt-card-title">Consultation Recording</h2>
                 <button
+                    type="button"
                     className={`record-btn ${isRecording ? 'recording' : ''}`}
                     onClick={isRecording ? stopRecording : startRecording}
                     disabled={isUploading}
                     title={isRecording ? 'Stop Recording' : 'Start Recording'}
+                    aria-label={isRecording ? 'Stop Recording' : 'Start Recording'}
                 >
-                    <Mic size={20} />
+                    <Mic size={19} />
                 </button>
             </div>
 
+            {/* Recording State Card (Section 5 & 6) */}
             <div className={`recording-banner ${isRecording ? 'recording-active' : ''}`}>
                 <div className="record-indicator">
-                    <div className={`record-dot ${isRecording ? 'dot-pulsing' : isUploading ? 'dot-uploading' : uploadError ? 'dot-error' : ''}`}></div>
+                    <div className={`record-dot ${isRecording ? 'dot-pulsing' : isUploading ? 'dot-uploading' : uploadError ? 'dot-error' : 'dot-ready'}`}></div>
                 </div>
-                <div className="recording-banner-text" style={{ flexGrow: 1 }}>
+
+                <div className="recording-banner-text">
                     <h4 className="recording-banner-title">
                         {isRecording ? 'Recording...' : isUploading ? 'Uploading to S3...' : uploadError ? 'Upload Failed' : 'Ready to record'}
                     </h4>
@@ -267,104 +268,113 @@ const ConsultationRecordingCard = ({ appointmentId }) => {
                                     : 'Press the record button to start the consultation.'}
                     </p>
                 </div>
+
                 {isRecording && (
                     <button
-                        className="apmt-card-btn"
+                        type="button"
+                        className="record-stop-btn"
                         onClick={stopRecording}
-                        style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', borderRadius: '4px', padding: '6px 12px', fontSize: '13px', cursor: 'pointer' }}
                     >
                         Stop
                     </button>
                 )}
             </div>
 
-            <div className="recordings-section-title">
-                <span>Previous Recordings</span>
-                <span>Duration</span>
-            </div>
+            {/* Previous Recordings Section (Section 7) */}
+            <div className="previous-recordings-section">
+                <h3 className="section-sub-heading">Previous Recordings</h3>
 
-            <div className="recordings-list">
-                {recordings.length === 0 ? (
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', textAlign: 'center', padding: '24px 0' }}>
-                        No recordings available.
-                    </p>
-                ) : (
-                    recordings.map((recording) => {
-                        const fileName = recording.file_url ? recording.file_url.split('/').pop() : 'Recording';
-                        const formattedDate = recording.created_at
-                            ? (() => {
-                                const d = new Date(recording.created_at);
-                                const day = d.getDate();
-                                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                                const month = monthNames[d.getMonth()];
-                                const year = d.getFullYear();
-                                const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                return `${day} ${month} ${year} • ${time}`;
-                            })()
-                            : 'N/A';
+                <div className="recordings-list">
+                    {recordings.length === 0 ? (
+                        <p className="no-recordings-msg">
+                            No recordings available yet.
+                        </p>
+                    ) : (
+                        recordings.map((recording) => {
+                            const fileName = recording.file_url ? recording.file_url.split('/').pop() : 'Recording';
+                            const formattedDate = recording.created_at
+                                ? (() => {
+                                    const d = new Date(recording.created_at);
+                                    const day = d.getDate();
+                                    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                                    const month = monthNames[d.getMonth()];
+                                    const year = d.getFullYear();
+                                    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                                    return `${day} ${month} ${year} · ${time}`;
+                                })()
+                                : 'N/A';
 
-                        return (
-                            <div key={recording.id} className="recording-item">
-                                <div className="recording-item-left">
-                                    <div className="audio-icon-wrapper">
-                                        <FileText size={18} />
+                            return (
+                                <div key={recording.id} className="mobile-recording-card">
+                                    <div className="recording-card-left">
+                                        <div className="recording-icon-box">
+                                            <FileText size={18} />
+                                        </div>
+                                        <div className="recording-text-info">
+                                            <span className="recording-filename" title={fileName}>{fileName}</span>
+                                            <span className="recording-date-time">{formattedDate}</span>
+                                        </div>
                                     </div>
-                                    <div className="audio-info">
-                                        <span className="audio-name">{fileName}</span>
-                                        <span className="audio-date">{formattedDate}</span>
+
+                                    <div className="recording-card-right">
+                                        <button
+                                            type="button"
+                                            className="recording-play-btn"
+                                            onClick={() => handlePlayPause(recording)}
+                                            aria-label={playingId === recording.id ? "Pause" : "Play"}
+                                        >
+                                            {playingId === recording.id ? (
+                                                <Pause size={14} fill="currentColor" />
+                                            ) : (
+                                                <Play size={14} fill="currentColor" />
+                                            )}
+                                        </button>
+
+                                        <span className="recording-duration">
+                                            {durations[recording.id] || '00:00'}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            className="recording-delete-btn"
+                                            onClick={() => handleDeleteAudio(recording.id)}
+                                            title="Delete recording"
+                                            aria-label="Delete recording"
+                                        >
+                                            <Trash2 size={15} />
+                                        </button>
                                     </div>
                                 </div>
-                                <div className="recording-item-right" style={{ position: 'relative' }}>
-                                    <button
-                                        className="audio-play-btn"
-                                        onClick={() => handlePlayPause(recording)}
-                                        style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                    >
-                                        {playingId === recording.id ? (
-                                            <Pause size={16} fill="currentColor" style={{ color: 'var(--accent-blue)' }} />
-                                        ) : (
-                                            <Play size={16} fill="currentColor" />
-                                        )}
-                                    </button>
-                                    <span className="audio-duration">{durations[recording.id] || '...'}</span>
-                                    <button
-                                        className="audio-dropdown-item delete-action"
-                                        onClick={() => handleDeleteAudio(recording.id)}
-                                    >
-                                        <Trash2 size={14} />
-                                        <span>Delete</span>
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    })
-                )}
+                            );
+                        })
+                    )}
+                </div>
             </div>
 
+            {/* Generate Transcript Button (Section 8) */}
             <div className="recording-footer-actions">
                 <button
-                    className={`apmt-card-btn ${
+                    type="button"
+                    className={`mobile-transcript-btn ${
                         transcriptGenerated
-                            ? 'apmt-card-btn-generated'
-                            : 'apmt-card-btn-outline'
+                            ? 'transcript-generated'
+                            : 'transcript-ready'
                     }`}
-                    style={{ marginRight: 'auto' }}
                     onClick={handleGenerateTranscript}
                     disabled={isTranscribing || transcriptGenerated}
                     title={transcriptGenerated ? 'Transcript has been generated' : 'Generate AI Transcript'}
                 >
                     {isTranscribing ? (
-                        <Loader2 size={16} className="spin-icon" />
+                        <Loader2 size={17} className="spin-icon" />
                     ) : transcriptGenerated ? (
-                        <CheckCircle2 size={16} />
+                        <CheckCircle2 size={17} />
                     ) : (
-                        <Sparkles size={16} />
+                        <Sparkles size={17} />
                     )}
                     <span>
-                        {isTranscribing ? 'Generating...' : transcriptGenerated ? 'Generated' : 'Generate Transcript'}
+                        {isTranscribing ? 'Generating Transcript...' : transcriptGenerated ? 'Transcript Generated' : 'Generate Transcript'}
                     </span>
                 </button>
-
             </div>
         </div>
     );

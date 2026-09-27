@@ -7,7 +7,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
     const [reports, setReports] = useState([]);
     const [isUploadingReport, setIsUploadingReport] = useState(false);
     const [reportError, setReportError] = useState(null);
-    // Set of reportIds currently being extracted
     const [extractingIds, setExtractingIds] = useState(new Set());
     const fileInputRef = useRef(null);
     const pollIntervalRef = useRef(null);
@@ -19,7 +18,7 @@ const MedicalReportsCard = ({ appointmentId }) => {
                 const incoming = response.data.data || [];
                 setReports(incoming);
 
-                // Auto-clear IDs whose extraction is now confirmed by the backend
+                // Auto-clear IDs whose extraction is confirmed
                 setExtractingIds((prev) => {
                     if (prev.size === 0) return prev;
                     const next = new Set(prev);
@@ -38,7 +37,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
         if (appointmentId) fetchReports();
     }, [appointmentId, fetchReports]);
 
-    // Poll while any extraction is in progress
     useEffect(() => {
         if (extractingIds.size > 0) {
             pollIntervalRef.current = setInterval(() => {
@@ -59,7 +57,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
         const contentType = file.type || "application/pdf";
 
         try {
-            // Step 1: Get S3 presigned URL
             let response;
             try {
                 response = await api.post(`appointments/${appointmentId}/report/upload`, {
@@ -80,7 +77,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
                 throw new Error("No upload URL returned from backend API");
             }
 
-            // Step 2: Upload file directly to S3
             try {
                 await axios.put(uploadUrl, file, {
                     headers: { 'Content-Type': contentType }
@@ -96,7 +92,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
                 }
             }
 
-            // Step 3: File is now in S3 — trigger extraction and mark as extracting
             const reportId = response.data.data?.report?.id;
             if (reportId) {
                 setExtractingIds((prev) => new Set([...prev, reportId]));
@@ -104,7 +99,6 @@ const MedicalReportsCard = ({ appointmentId }) => {
                     .catch(err => console.warn("Report extraction trigger failed (non-blocking):", err));
             }
 
-            // Step 4: Refresh reports list
             await fetchReports();
         } catch (err) {
             console.error("Report upload failed:", err);
@@ -139,7 +133,7 @@ const MedicalReportsCard = ({ appointmentId }) => {
 
         if (report.has_extraction) {
             return (
-                <span className="extraction-badge extraction-badge--done" title="AI content extracted — ready for summary">
+                <span className="extraction-badge extraction-badge--done" title="AI content extracted">
                     <CheckCircle2 size={12} />
                     Extracted
                 </span>
@@ -159,7 +153,8 @@ const MedicalReportsCard = ({ appointmentId }) => {
     };
 
     return (
-        <div className="apmt-card">
+        <div className="apmt-card medical-reports-card">
+            {/* Header: Title + Upload Button */}
             <div className="apmt-card-header">
                 <h2 className="apmt-card-title">Medical Reports</h2>
                 <input
@@ -170,6 +165,7 @@ const MedicalReportsCard = ({ appointmentId }) => {
                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                 />
                 <button
+                    type="button"
                     className="apmt-card-btn apmt-card-btn-outline"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploadingReport}
@@ -180,12 +176,13 @@ const MedicalReportsCard = ({ appointmentId }) => {
             </div>
 
             {reportError && (
-                <div style={{ color: '#dc2626', backgroundColor: '#fef2f2', border: '1px solid #fca5a5', padding: '10px 14px', borderRadius: '8px', marginBottom: '16px', fontSize: '13px' }}>
+                <div className="report-error-banner">
                     {reportError}
                 </div>
             )}
 
-            <div className="reports-table-wrapper">
+            {/* DESKTOP TABLE VIEW */}
+            <div className="reports-table-wrapper desktop-only">
                 <table className="reports-table">
                     <thead>
                         <tr>
@@ -257,6 +254,74 @@ const MedicalReportsCard = ({ appointmentId }) => {
                         )}
                     </tbody>
                 </table>
+            </div>
+
+            {/* MOBILE CARD VIEW (Section 9) */}
+            <div className="mobile-reports-container mobile-only">
+                {reports.length === 0 ? (
+                    <p className="no-reports-msg">
+                        No medical reports uploaded yet.
+                    </p>
+                ) : (
+                    reports.map((report) => {
+                        const fileName = report.file_url ? report.file_url.split('/').pop() : 'Report';
+                        const fileType = fileName.split('.').pop().toUpperCase();
+                        const formattedDate = report.created_at
+                            ? new Date(report.created_at).toLocaleDateString('en-GB')
+                            : 'N/A';
+
+                        return (
+                            <div key={report.id} className="mobile-report-card">
+                                <div className="mobile-report-top">
+                                    <div className="mobile-report-icon-box">
+                                        <FileText size={20} />
+                                    </div>
+                                    <div className="mobile-report-info">
+                                        <span className="mobile-report-filename" title={fileName}>
+                                            {fileName}
+                                        </span>
+                                        <span className="mobile-report-sub">
+                                            {formattedDate} · {fileType || 'PDF'}
+                                        </span>
+                                    </div>
+                                    {getExtractionBadge(report)}
+                                </div>
+
+                                <div className="mobile-report-actions">
+                                    <button
+                                        type="button"
+                                        className="mobile-report-action-pill view"
+                                        title="View report"
+                                        onClick={() => window.open(report.downloadUrl, '_blank')}
+                                    >
+                                        <Eye size={15} />
+                                        <span>View</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="mobile-report-action-pill download"
+                                        title="Download report"
+                                        onClick={() => window.open(report.downloadUrl, '_blank')}
+                                    >
+                                        <Download size={15} />
+                                        <span>Download</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        className="mobile-report-action-pill delete"
+                                        title="Delete report"
+                                        onClick={() => handleDeleteReport(report.id)}
+                                    >
+                                        <Trash2 size={15} />
+                                        <span>Delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })
+                )}
             </div>
         </div>
     );
